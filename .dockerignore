@@ -1,0 +1,7 @@
+node_modules
+_site
+.git
+.env
+npm-debug.log
+.DS_Store
+README.md

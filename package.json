@@ -1,0 +1,24 @@
+{
+  "name": "remote-slides",
+  "version": "1.0.0",
+  "description": "Remote controlled presentation system with dual projection",
+  "scripts": {
+    "build": "eleventy",
+    "start": "node server.js",
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:eleventy": "eleventy --serve --port=8081",
+    "dev:server": "nodemon server.js"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "express-session": "^1.17.3",
+    "body-parser": "^1.20.2",
+    "markdown-it": "^13.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "npm-run-all": "^4.1.5"
+  }
+}

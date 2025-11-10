@@ -1,0 +1,39 @@
+---
+layout: base.njk
+---
+<link rel="stylesheet" href="/css/presenter.css">
+
+<div class="presenter-container">
+    <div class="presenter-header">
+        <h1>Presenter View</h1>
+        <div class="connection-status">
+            <span id="status-indicator"></span>
+            <span id="status-text">Connecting...</span>
+        </div>
+    </div>
+
+    <div class="presenter-main">
+        <div class="current-slide-preview">
+            <h2>Current Slide</h2>
+            <div id="current-slide" class="slide-preview"></div>
+        </div>
+
+        <div class="next-slide-preview">
+            <h2>Next Slide</h2>
+            <div id="next-slide" class="slide-preview"></div>
+        </div>
+    </div>
+
+    <div class="presenter-notes-panel">
+        <h2>Presenter Notes</h2>
+        <div id="notes-content" class="notes-content"></div>
+    </div>
+
+    <div class="presenter-controls">
+        <button id="prev-btn" class="control-btn">Previous</button>
+        <span id="slide-counter" class="slide-counter">1 / 1</span>
+        <button id="next-btn" class="control-btn">Next</button>
+    </div>
+</div>
+
+<script src="/js/presenter.js"></script>

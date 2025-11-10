@@ -1,0 +1,21 @@
+---
+layout: base.njk
+---
+<div class="presentation-container">
+    <div class="slides">
+        {% set processedSlides = rawContent | processSlides %}
+        {% for slide in processedSlides %}
+        <section class="slide" data-slide-index="{{ slide.index }}">
+            <div class="slide-content">
+                {{ slide.content | safe }}
+            </div>
+            <div class="presenter-notes" style="display: none;">
+                {{ slide.notes }}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+    <div class="slide-number"></div>
+</div>
+
+<script src="/js/slides.js"></script>
