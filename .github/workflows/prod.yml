@@ -42,8 +42,9 @@ jobs:
         run: git archive -o deploy.tar HEAD
 
       - name: Deploy to CapRover
-        uses: caprover/deploy-from-github@v1.0.1
+        uses: caprover/deploy-from-github@v1.1.2
         with:
-          server: '${{ secrets.CAPROVER_SERVER }}'
+          server: ${{ secrets.CAPROVER_SERVER }}
           app: ${{ steps.app-info.outputs.app }}
           token: ${{ steps.app-info.outputs.token }}
+          branch: ${{ github.ref_name }}
