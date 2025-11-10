@@ -94,6 +94,55 @@ class PresenterController {
                     break;
             }
         });
+
+        // Touch/swipe navigation
+        this.setupTouchNavigation();
+    }
+
+    setupTouchNavigation() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        const minSwipeDistance = 50;
+
+        const slidesContainer = document.querySelector('.presenter-main');
+        if (slidesContainer) {
+            slidesContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            slidesContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                this.handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY, minSwipeDistance);
+            }, { passive: true });
+        }
+    }
+
+    handleSwipe(startX, startY, endX, endY, minDistance) {
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (Math.abs(deltaX) > minDistance) {
+                if (deltaX > 0) {
+                    this.previousSlide();
+                } else {
+                    this.nextSlide();
+                }
+            }
+        } else {
+            if (Math.abs(deltaY) > minDistance) {
+                if (deltaY > 0) {
+                    this.previousSlide();
+                } else {
+                    this.nextSlide();
+                }
+            }
+        }
     }
 
     connectWebSocket() {

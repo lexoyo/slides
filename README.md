@@ -70,9 +70,14 @@ More content
 - Home: First slide
 - End: Last slide
 
+**Touch/Swipe Controls (Mobile):**
+- Swipe left/up: Next slide
+- Swipe right/down: Previous slide
+
 **Presenter View:**
 - Same keyboard shortcuts as public display
-- Plus on-screen buttons for navigation
+- Touch/swipe support on slide previews
+- On-screen buttons for navigation
 - Shows current slide, next slide, and presenter notes
 
 ## Deployment on CapRover

@@ -18,6 +18,9 @@ class SlideController {
         // Setup keyboard navigation
         this.setupKeyboardNavigation();
 
+        // Setup touch/swipe navigation
+        this.setupTouchNavigation();
+
         // Setup WebSocket connection
         this.connectWebSocket();
 
@@ -51,6 +54,56 @@ class SlideController {
                     break;
             }
         });
+    }
+
+    setupTouchNavigation() {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        const minSwipeDistance = 50; // Minimum distance for a swipe
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            this.handleSwipe();
+        }, { passive: true });
+
+        this.handleSwipe = () => {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Check if horizontal swipe is more significant than vertical
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Horizontal swipe
+                if (Math.abs(deltaX) > minSwipeDistance) {
+                    if (deltaX > 0) {
+                        // Swipe right - previous slide
+                        this.previousSlide();
+                    } else {
+                        // Swipe left - next slide
+                        this.nextSlide();
+                    }
+                }
+            } else {
+                // Vertical swipe
+                if (Math.abs(deltaY) > minSwipeDistance) {
+                    if (deltaY > 0) {
+                        // Swipe down - previous slide
+                        this.previousSlide();
+                    } else {
+                        // Swipe up - next slide
+                        this.nextSlide();
+                    }
+                }
+            }
+        };
     }
 
     connectWebSocket() {
