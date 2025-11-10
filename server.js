@@ -352,26 +352,21 @@ app.get('/api/presentations', requireAuth, (req, res) => {
     }
 });
 
-// API endpoint to get markdown content for editor
-app.get('/api/slides/content', requireAuth, (req, res) => {
+// API endpoint to get markdown content (public - for viewing presentations)
+app.get('/api/slides/content', (req, res) => {
     try {
         const presentationId = req.query.id || 'default';
         const mdPath = path.join(__dirname, 'presentations', `${presentationId}.md`);
-        console.log('Loading markdown from:', mdPath);
-        console.log('File exists:', fs.existsSync(mdPath));
 
         if (fs.existsSync(mdPath)) {
             const content = fs.readFileSync(mdPath, 'utf8');
-            console.log('File content length:', content.length);
 
             // Remove frontmatter
             const contentWithoutFrontmatter = content.replace(/^---[\s\S]*?---\n/, '');
-            console.log('Content after removing frontmatter:', contentWithoutFrontmatter.substring(0, 100));
 
             res.json({ content: contentWithoutFrontmatter });
         } else {
-            console.log('File not found, returning empty content');
-            res.json({ content: '' });
+            res.status(404).json({ error: 'Presentation not found' });
         }
     } catch (error) {
         console.error('Error reading markdown file:', error);
@@ -548,8 +543,8 @@ app.post('/api/presentations/:id/duplicate', requireAuth, (req, res) => {
     }
 });
 
-// API endpoint to get presentation metadata
-app.get('/api/presentations/:id', requireAuth, (req, res) => {
+// API endpoint to get presentation metadata (public - for viewing/presenting)
+app.get('/api/presentations/:id', (req, res) => {
     try {
         const presentationId = req.params.id;
         const jsonPath = path.join(__dirname, 'presentations', `${presentationId}.json`);
