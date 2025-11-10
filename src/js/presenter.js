@@ -374,23 +374,30 @@ class PresenterController {
     updatePresenterView() {
         if (this.slides.length === 0) return;
 
-        // Update current slide
+        // Update current slide iframe
         const currentSlide = this.slides[this.currentIndex];
-        if (currentSlide && this.currentSlideEl) {
-            this.currentSlideEl.innerHTML = `<div class="slide-content"><div>${currentSlide.content}</div></div>`;
+        if (this.currentSlideEl) {
+            this.currentSlideEl.src = `/?id=${this.presentationId}#${this.currentIndex}`;
         }
 
-        // Update next slide
+        // Update next slide iframe
         const nextSlide = this.slides[this.currentIndex + 1];
-        if (nextSlide && this.nextSlideEl) {
-            this.nextSlideEl.innerHTML = `<div class="slide-content"><div>${nextSlide.content}</div></div>`;
-        } else if (this.nextSlideEl) {
-            this.nextSlideEl.innerHTML = '<div class="slide-content"><div style="opacity: 0.5;">End of presentation</div></div>';
+        if (this.nextSlideEl) {
+            if (nextSlide) {
+                this.nextSlideEl.src = `/?id=${this.presentationId}#${this.currentIndex + 1}`;
+            } else {
+                // Show empty slide for end of presentation
+                this.nextSlideEl.src = 'about:blank';
+            }
         }
 
-        // Update notes
+        // Update notes (convert markdown to HTML)
         if (currentSlide && this.notesEl) {
-            this.notesEl.textContent = currentSlide.notes || 'No notes for this slide';
+            if (currentSlide.notes) {
+                this.notesEl.innerHTML = this.markdownToHtml(currentSlide.notes);
+            } else {
+                this.notesEl.innerHTML = '<p style="opacity: 0.6;">No notes for this slide</p>';
+            }
         }
 
         // Update counter

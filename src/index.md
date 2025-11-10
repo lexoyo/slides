@@ -11,6 +11,13 @@ Start your presentation here...
 
 test notes 1
 
+
+|a|b|
+|--|--|
+|test text| tableau |
+
+> quelles solutions pour avoir une image de fond dans un slide? et pour avoir une image a gauche qui prend toute la hauteur et un texte a droite? 
+
 -->
 
 ---
@@ -25,8 +32,6 @@ Add more content
 
 aaa
 
-> quelles solutions pour avoir une image de fond dans un slide? et pour avoir une image a gauche qui prend toute la hauteur et un texte a droite? 
-
 <!--
 
 test notes 2
@@ -34,5 +39,26 @@ test notes 2
 * a
 * b
 * list
+
+-->
+
+---
+
+
+> test notes 3
+
+
+|a|b|
+|--|--|
+|test text| tableau |
+
+<!--
+
+test notes 3
+
+
+|a|b|
+|--|--|
+|test text| tableau |
 
 -->
