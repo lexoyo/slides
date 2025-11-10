@@ -216,12 +216,16 @@ body {
 
 .split-text {
     flex: 1;
+    /*
     display: flex;
     flex-direction: column;
     justify-content: center;
+    */
+    margin: auto;
 }
 
 .split-text-right {
+    text-align: right;
     align-items: end;
 }
 
