@@ -16,6 +16,7 @@ class PresenterController {
 
         // Load slides data
         await this.loadSlides();
+        await this.loadTheme();
 
         // Setup UI elements
         this.setupUI();
@@ -125,6 +126,31 @@ class PresenterController {
         }).join('\n');
 
         return html;
+    }
+
+    async loadTheme() {
+        try {
+            const response = await fetch(`/api/presentations/${this.presentationId}`);
+            if (response.ok) {
+                const metadata = await response.json();
+                const theme = metadata.theme || 'minimalist';
+                this.applyTheme(theme);
+            }
+        } catch (error) {
+            console.error('Error loading theme:', error);
+        }
+    }
+
+    applyTheme(theme) {
+        // Update preview styles to match theme
+        const previews = document.querySelectorAll('.slide-preview');
+        previews.forEach(preview => {
+            if (theme === 'dark') {
+                preview.style.background = '#1a1a1a';
+            } else {
+                preview.style.background = '#ffffff';
+            }
+        });
     }
 
     parseSlidesFromDOM() {

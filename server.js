@@ -400,6 +400,7 @@ app.post('/api/presentations', requireAuth, (req, res) => {
             id,
             title: title || 'New Presentation',
             description: description || '',
+            theme: 'minimalist',
             created: new Date().toISOString().split('T')[0],
             modified: new Date().toISOString().split('T')[0]
         };
@@ -547,10 +548,28 @@ app.post('/api/presentations/:id/duplicate', requireAuth, (req, res) => {
     }
 });
 
+// API endpoint to get presentation metadata
+app.get('/api/presentations/:id', requireAuth, (req, res) => {
+    try {
+        const presentationId = req.params.id;
+        const jsonPath = path.join(__dirname, 'presentations', `${presentationId}.json`);
+
+        if (!fs.existsSync(jsonPath)) {
+            return res.status(404).json({ error: 'Presentation not found' });
+        }
+
+        const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        res.json(metadata);
+    } catch (error) {
+        console.error('Error reading presentation metadata:', error);
+        res.status(500).json({ error: 'Failed to read presentation metadata' });
+    }
+});
+
 // API endpoint to save markdown content
 app.post('/api/slides/content', requireAuth, (req, res) => {
     try {
-        const { content, id } = req.body;
+        const { content, id, theme } = req.body;
         if (typeof content !== 'string') {
             return res.status(400).json({ error: 'Invalid content' });
         }
@@ -573,10 +592,13 @@ app.post('/api/slides/content', requireAuth, (req, res) => {
         const fullContent = frontmatter + content;
         fs.writeFileSync(mdPath, fullContent, 'utf8');
 
-        // Update metadata modified date
+        // Update metadata modified date and theme
         if (fs.existsSync(jsonPath)) {
             const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
             metadata.modified = new Date().toISOString().split('T')[0];
+            if (theme) {
+                metadata.theme = theme;
+            }
             fs.writeFileSync(jsonPath, JSON.stringify(metadata, null, 2), 'utf8');
         }
 

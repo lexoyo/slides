@@ -19,6 +19,7 @@ class SlideController {
             // Load presentation from API
             this.presentationId = urlId;
             await this.loadPresentation();
+            await this.loadTheme();
         }
 
         // Get slides from DOM (either pre-rendered or dynamically loaded)
@@ -67,6 +68,34 @@ class SlideController {
                 slidesContainer.innerHTML = '<section class="slide active"><div class="slide-content"><h1>Error loading presentation</h1></div></section>';
             }
         }
+    }
+
+    async loadTheme() {
+        try {
+            const response = await fetch(`/api/presentations/${this.presentationId}`);
+            if (response.ok) {
+                const metadata = await response.json();
+                const theme = metadata.theme || 'minimalist';
+                this.applyTheme(theme);
+            }
+        } catch (error) {
+            console.error('Error loading theme:', error);
+        }
+    }
+
+    applyTheme(theme) {
+        // Remove existing theme link if any
+        const existingTheme = document.getElementById('theme-css');
+        if (existingTheme) {
+            existingTheme.remove();
+        }
+
+        // Add new theme link
+        const link = document.createElement('link');
+        link.id = 'theme-css';
+        link.rel = 'stylesheet';
+        link.href = `/css/themes/${theme}.css`;
+        document.head.appendChild(link);
     }
 
     renderSlides(markdownContent) {

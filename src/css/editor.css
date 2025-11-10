@@ -34,6 +34,21 @@ body {
     align-items: center;
 }
 
+.theme-selector {
+    padding: 0.5rem 1rem;
+    background: #334155;
+    color: #fff;
+    border: 2px solid #475569;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.theme-selector:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
 .btn {
     padding: 0.5rem 1rem;
     border: none;

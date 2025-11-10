@@ -9,10 +9,12 @@ class SlideEditor {
         this.nextSlideBtn = document.getElementById('next-slide-btn');
         this.slideIndicator = document.getElementById('slide-indicator');
         this.toast = document.getElementById('toast');
+        this.themeSelector = document.getElementById('theme-selector');
 
         this.currentSlideIndex = 0;
         this.slides = [];
         this.debounceTimer = null;
+        this.currentTheme = 'minimalist';
 
         // Get presentation ID from URL
         const params = new URLSearchParams(window.location.search);
@@ -22,14 +24,34 @@ class SlideEditor {
     }
 
     async init() {
-        // Load initial content
+        // Load initial content and metadata
         await this.loadContent();
+        await this.loadMetadata();
 
         // Setup event listeners
         this.setupEventListeners();
 
         // Initial preview render
         this.updatePreview();
+    }
+
+    async loadMetadata() {
+        try {
+            const response = await fetch(`/api/presentations/${this.presentationId}`);
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (response.ok) {
+                const metadata = await response.json();
+                this.currentTheme = metadata.theme || 'minimalist';
+                this.themeSelector.value = this.currentTheme;
+            }
+        } catch (error) {
+            console.error('Error loading metadata:', error);
+        }
     }
 
     async loadContent() {
@@ -87,6 +109,12 @@ class SlideEditor {
 
         // Drag and drop
         this.setupDragAndDrop();
+
+        // Theme selector
+        this.themeSelector.addEventListener('change', (e) => {
+            this.currentTheme = e.target.value;
+            this.showToast(`Theme changed to ${this.currentTheme}. Save to apply.`, 'info');
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -303,7 +331,8 @@ class SlideEditor {
                 },
                 body: JSON.stringify({
                     content,
-                    id: this.presentationId
+                    id: this.presentationId,
+                    theme: this.currentTheme
                 }),
             });
 
