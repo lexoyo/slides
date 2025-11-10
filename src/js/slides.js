@@ -119,13 +119,81 @@ class SlideController {
             // Remove presenter notes (if any)
             const contentWithoutNotes = slideContent.replace(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/gi, '');
 
+            // Parse special directives
+            const { content, bgImage, layoutImage, layoutPosition } = this.parseSlideDirectives(contentWithoutNotes);
+
+            // Apply background image if specified
+            if (bgImage) {
+                slide.style.backgroundImage = `url(${bgImage})`;
+                slide.style.backgroundSize = 'cover';
+                slide.style.backgroundPosition = 'center';
+            }
+
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slide-content';
-            slideDiv.innerHTML = this.markdownToHtml(contentWithoutNotes);
+
+            // Apply layout if image layout is specified
+            if (layoutImage) {
+                slideDiv.classList.add('split-layout');
+                const imageDiv = document.createElement('div');
+                imageDiv.className = `split-image split-image-${layoutPosition}`;
+                imageDiv.innerHTML = `<img src="${layoutImage}" alt="">`;
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'split-text';
+                textDiv.innerHTML = this.markdownToHtml(content);
+
+                if (layoutPosition === 'left') {
+                    slideDiv.appendChild(imageDiv);
+                    slideDiv.appendChild(textDiv);
+                } else {
+                    slideDiv.appendChild(textDiv);
+                    slideDiv.appendChild(imageDiv);
+                }
+            } else {
+                slideDiv.innerHTML = this.markdownToHtml(content);
+            }
 
             slide.appendChild(slideDiv);
             slidesContainer.appendChild(slide);
         });
+    }
+
+    parseSlideDirectives(content) {
+        let bgImage = null;
+        let layoutImage = null;
+        let layoutPosition = null;
+        let cleanContent = content;
+
+        // Check for bg: directive
+        const bgMatch = content.match(/^bg:\s*(.+)$/m);
+        if (bgMatch) {
+            bgImage = bgMatch[1].trim();
+            cleanContent = cleanContent.replace(/^bg:\s*.+$\n?/m, '');
+        }
+
+        // Check for left: directive
+        const leftMatch = content.match(/^left:\s*(.+)$/m);
+        if (leftMatch) {
+            layoutImage = leftMatch[1].trim();
+            layoutPosition = 'left';
+            cleanContent = cleanContent.replace(/^left:\s*.+$\n?/m, '');
+        }
+
+        // Check for right: directive
+        const rightMatch = content.match(/^right:\s*(.+)$/m);
+        if (rightMatch) {
+            layoutImage = rightMatch[1].trim();
+            layoutPosition = 'right';
+            cleanContent = cleanContent.replace(/^right:\s*.+$\n?/m, '');
+        }
+
+        return {
+            content: cleanContent.trim(),
+            bgImage,
+            layoutImage,
+            layoutPosition
+        };
     }
 
     markdownToHtml(markdown) {

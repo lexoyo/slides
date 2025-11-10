@@ -253,7 +253,21 @@ class SlideEditor {
 
     togglePreview() {
         const previewPane = document.getElementById('preview-pane');
-        previewPane.classList.toggle('visible');
+        const editorMain = document.querySelector('.editor-main');
+
+        // Toggle visibility
+        if (window.innerWidth > 1024) {
+            // Desktop: toggle display and adjust grid
+            previewPane.classList.toggle('hidden');
+            if (previewPane.classList.contains('hidden')) {
+                editorMain.style.gridTemplateColumns = '1fr';
+            } else {
+                editorMain.style.gridTemplateColumns = '1fr 1fr';
+            }
+        } else {
+            // Mobile: toggle visible class
+            previewPane.classList.toggle('visible');
+        }
     }
 
     showToast(message, type = 'success') {

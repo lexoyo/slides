@@ -63,9 +63,10 @@ Create or edit `src/index.md` directly. Use `---` to separate slides.
 
 Content goes here
 
-<!-- notes
+<!--
 These are presenter notes.
 They will only be visible in the presenter view.
+Markdown is supported in notes.
 -->
 
 ---
@@ -74,6 +75,37 @@ They will only be visible in the presenter view.
 
 More content
 ```
+
+### Special Slide Layouts
+
+You can use special directives at the beginning of a slide for advanced layouts:
+
+**Background Image:**
+```markdown
+bg: /images/background.jpg
+
+# My Slide Title
+Content appears over the background image
+```
+
+**Image on Left, Text on Right:**
+```markdown
+left: /images/photo.jpg
+
+# My Title
+- Point 1
+- Point 2
+```
+
+**Image on Right, Text on Left:**
+```markdown
+right: /images/photo.jpg
+
+# My Title
+Content appears on the left
+```
+
+**Note**: All directives must be at the very beginning of the slide (before any content).
 
 ### Keyboard Controls
 

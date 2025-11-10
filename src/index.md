@@ -23,6 +23,7 @@ test notes 1
 ---
 
 # Second Slide
+left:/assets/1762796726726-640415235.jpg
 
 Add more content
 

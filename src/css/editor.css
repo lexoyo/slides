@@ -15,7 +15,7 @@ body {
 
 .editor-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 1rem 1.5rem;
     background: #2d3748;
@@ -385,18 +385,23 @@ body {
     padding: 2rem;
 }
 
+/* Preview toggle - works on all screen sizes */
+.preview-pane {
+    transition: display 0.3s ease;
+}
+
+.preview-pane.hidden {
+    display: none;
+}
+
 /* Responsive design */
 @media (max-width: 1024px) {
     .editor-main {
         grid-template-columns: 1fr;
     }
 
-    .preview-pane {
+    .preview-pane:not(.visible) {
         display: none;
-    }
-
-    .preview-pane.visible {
-        display: flex;
     }
 
     .editor-pane {

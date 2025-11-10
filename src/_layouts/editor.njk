@@ -5,16 +5,14 @@ layout: base.njk
 
 <div class="editor-container">
     <header class="editor-header">
-        <h1>Slide Editor</h1>
         <div class="editor-actions">
+            <a href="/admin" class="btn btn-secondary">← Dashboard</a>
             <select id="theme-selector" class="theme-selector">
                 <option value="minimalist">Minimalist</option>
                 <option value="dark">Dark</option>
             </select>
             <button id="save-btn" class="btn btn-primary">Save</button>
             <button id="preview-btn" class="btn btn-secondary">Toggle Preview</button>
-            <a href="/" class="btn btn-secondary" target="_blank">View Slides</a>
-            <a href="/presenter" class="btn btn-secondary">Presenter</a>
             <a href="/logout" class="btn btn-link">Logout</a>
         </div>
     </header>
@@ -22,13 +20,11 @@ layout: base.njk
     <div class="editor-main">
         <div class="editor-pane">
             <div class="pane-header">
-                <h2>Markdown Editor</h2>
                 <div class="header-actions">
                     <label for="image-upload" class="btn-upload" title="Upload image">
                         📎 Upload Image
                     </label>
                     <input type="file" id="image-upload" accept="image/*" style="display: none;">
-                    <span class="help-text">Use --- to separate slides</span>
                 </div>
             </div>
             <div class="editor-wrapper">
@@ -43,7 +39,6 @@ layout: base.njk
 
         <div class="preview-pane" id="preview-pane">
             <div class="pane-header">
-                <h2>Live Preview</h2>
                 <button id="refresh-preview-btn" class="btn btn-secondary">Refresh Preview</button>
             </div>
             <iframe id="preview-iframe" class="preview-iframe"></iframe>
