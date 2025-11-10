@@ -1,16 +1,33 @@
 // Slide navigation with keyboard controls and WebSocket sync
 class SlideController {
     constructor() {
-        this.slides = document.querySelectorAll('.slide');
+        this.slides = null;
         this.currentIndex = 0;
         this.ws = null;
         this.reconnectInterval = 3000;
+        this.presentationId = null;
 
         this.init();
     }
 
-    init() {
-        if (this.slides.length === 0) return;
+    async init() {
+        // Check if we need to load presentation dynamically
+        const params = new URLSearchParams(window.location.search);
+        const urlId = params.get('id');
+
+        if (urlId) {
+            // Load presentation from API
+            this.presentationId = urlId;
+            await this.loadPresentation();
+        }
+
+        // Get slides from DOM (either pre-rendered or dynamically loaded)
+        this.slides = document.querySelectorAll('.slide');
+
+        if (this.slides.length === 0) {
+            console.error('No slides found');
+            return;
+        }
 
         // Show first slide
         this.showSlide(0);
@@ -26,6 +43,102 @@ class SlideController {
 
         // Update slide number
         this.updateSlideNumber();
+    }
+
+    async loadPresentation() {
+        try {
+            const response = await fetch(`/api/slides/content?id=${this.presentationId}`);
+
+            if (!response.ok) {
+                console.error('Failed to load presentation');
+                const slidesContainer = document.querySelector('.slides');
+                if (slidesContainer) {
+                    slidesContainer.innerHTML = '<section class="slide active"><div class="slide-content"><h1>Error: Presentation not found</h1></div></section>';
+                }
+                return;
+            }
+
+            const data = await response.json();
+            this.renderSlides(data.content);
+        } catch (error) {
+            console.error('Error loading presentation:', error);
+            const slidesContainer = document.querySelector('.slides');
+            if (slidesContainer) {
+                slidesContainer.innerHTML = '<section class="slide active"><div class="slide-content"><h1>Error loading presentation</h1></div></section>';
+            }
+        }
+    }
+
+    renderSlides(markdownContent) {
+        const slidesContainer = document.querySelector('.slides');
+        if (!slidesContainer) return;
+
+        // Split content into slides
+        const slideContents = markdownContent.split(/\n---+\n/).filter(s => s.trim());
+
+        // Clear existing slides
+        slidesContainer.innerHTML = '';
+
+        // Render each slide
+        slideContents.forEach((slideContent, index) => {
+            const slide = document.createElement('section');
+            slide.className = 'slide';
+            slide.setAttribute('data-slide-index', index);
+
+            // Remove presenter notes (if any)
+            const contentWithoutNotes = slideContent.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+
+            const slideDiv = document.createElement('div');
+            slideDiv.className = 'slide-content';
+            slideDiv.innerHTML = this.markdownToHtml(contentWithoutNotes);
+
+            slide.appendChild(slideDiv);
+            slidesContainer.appendChild(slide);
+        });
+    }
+
+    markdownToHtml(markdown) {
+        let html = markdown;
+
+        // Images (must be before links)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+        // Headers
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+        // Bold
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+        // Italic
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+        // Code inline
+        html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+
+        // Code blocks
+        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+        // Unordered lists
+        html = html.replace(/^\- (.+)$/gim, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+        // Ordered lists
+        html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+
+        // Paragraphs
+        html = html.split('\n\n').map(para => {
+            if (!para.match(/^<[huplodiv]/)) {
+                return `<p>${para.replace(/\n/g, '<br>')}</p>`;
+            }
+            return para;
+        }).join('\n');
+
+        return html;
     }
 
     setupKeyboardNavigation() {

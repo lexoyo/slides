@@ -10,6 +10,10 @@ class PresenterController {
     }
 
     async init() {
+        // Get presentation ID from URL
+        const params = new URLSearchParams(window.location.search);
+        this.presentationId = params.get('id') || 'default';
+
         // Load slides data
         await this.loadSlides();
 
@@ -28,18 +32,99 @@ class PresenterController {
 
     async loadSlides() {
         try {
-            const response = await fetch('/slides-data.json');
+            const response = await fetch(`/api/slides/content?id=${this.presentationId}`);
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
             if (response.ok) {
                 const data = await response.json();
-                this.slides = data.slides || [];
+                this.parseMarkdownToSlides(data.content);
             } else {
-                // Fallback: parse from DOM if JSON endpoint doesn't exist
-                this.slides = this.parseSlidesFromDOM();
+                console.error('Failed to load presentation');
+                this.slides = [{
+                    content: '<h1>Error: Presentation not found</h1>',
+                    notes: '',
+                    index: 0
+                }];
             }
         } catch (error) {
             console.error('Failed to load slides:', error);
-            this.slides = this.parseSlidesFromDOM();
+            this.slides = [{
+                content: '<h1>Error loading presentation</h1>',
+                notes: '',
+                index: 0
+            }];
         }
+    }
+
+    parseMarkdownToSlides(markdownContent) {
+        const slideContents = markdownContent.split(/\n---+\n/).filter(s => s.trim());
+        this.slides = [];
+
+        slideContents.forEach((slideContent, index) => {
+            // Extract notes
+            const notesMatch = slideContent.match(/<!--\s*notes\s*\n([\s\S]*?)\n-->/i);
+            const notes = notesMatch ? notesMatch[1].trim() : '';
+
+            // Remove notes from content
+            const contentWithoutNotes = slideContent.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+
+            // Convert markdown to HTML
+            const htmlContent = this.markdownToHtml(contentWithoutNotes);
+
+            this.slides.push({
+                content: htmlContent,
+                notes: notes,
+                index: index
+            });
+        });
+    }
+
+    markdownToHtml(markdown) {
+        let html = markdown;
+
+        // Images (must be before links)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+        // Headers
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+        // Bold
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+        // Italic
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+        // Code inline
+        html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+
+        // Code blocks
+        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+        // Unordered lists
+        html = html.replace(/^\- (.+)$/gim, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+        // Ordered lists
+        html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
+
+        // Paragraphs
+        html = html.split('\n\n').map(para => {
+            if (!para.match(/^<[huplodiv]/)) {
+                return `<p>${para.replace(/\n/g, '<br>')}</p>`;
+            }
+            return para;
+        }).join('\n');
+
+        return html;
     }
 
     parseSlidesFromDOM() {
