@@ -125,8 +125,9 @@ class SlideController {
             // Apply background image if specified
             if (bgImage) {
                 slide.style.backgroundImage = `url(${bgImage})`;
-                slide.style.backgroundSize = 'cover';
+                slide.style.backgroundSize = 'contain';
                 slide.style.backgroundPosition = 'center';
+                slide.style.backgroundRepeat = 'no-repeat';
             }
 
             const slideDiv = document.createElement('div');
