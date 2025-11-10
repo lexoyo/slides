@@ -189,7 +189,20 @@ class SlideEditor {
     }
 
     loadPreview() {
-        this.previewIframe.src = `/?id=${this.presentationId}`;
+        // Try to get current slide from iframe if it exists
+        let currentSlide = 0;
+        try {
+            const iframeHash = this.previewIframe.contentWindow?.location.hash;
+            if (iframeHash) {
+                currentSlide = parseInt(iframeHash.substring(1)) || 0;
+            }
+        } catch (e) {
+            // Cross-origin or not loaded yet, ignore
+        }
+
+        // Force reload with timestamp to bust cache, but keep current slide
+        const timestamp = Date.now();
+        this.previewIframe.src = `/?id=${this.presentationId}&t=${timestamp}#${currentSlide}`;
     }
 
     insertImageMarkdown(url, altText) {
