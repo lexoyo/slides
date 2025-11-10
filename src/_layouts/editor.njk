@@ -1,0 +1,64 @@
+---
+layout: base.njk
+---
+<link rel="stylesheet" href="/css/editor.css">
+
+<div class="editor-container">
+    <header class="editor-header">
+        <h1>Slide Editor</h1>
+        <div class="editor-actions">
+            <button id="save-btn" class="btn btn-primary">Save</button>
+            <button id="preview-btn" class="btn btn-secondary">Toggle Preview</button>
+            <a href="/" class="btn btn-secondary" target="_blank">View Slides</a>
+            <a href="/presenter" class="btn btn-secondary">Presenter</a>
+            <a href="/logout" class="btn btn-link">Logout</a>
+        </div>
+    </header>
+
+    <div class="editor-main">
+        <div class="editor-pane">
+            <div class="pane-header">
+                <h2>Markdown Editor</h2>
+                <span class="help-text">Use --- to separate slides</span>
+            </div>
+            <textarea id="markdown-editor" class="markdown-textarea"></textarea>
+        </div>
+
+        <div class="preview-pane" id="preview-pane">
+            <div class="pane-header">
+                <h2>Live Preview</h2>
+                <div class="slide-nav">
+                    <button id="prev-slide-btn" class="nav-btn">←</button>
+                    <span id="slide-indicator">Slide 1</span>
+                    <button id="next-slide-btn" class="nav-btn">→</button>
+                </div>
+            </div>
+            <div id="preview-content" class="preview-content"></div>
+        </div>
+    </div>
+
+    <div class="editor-help">
+        <details>
+            <summary>Markdown Help</summary>
+            <div class="help-content">
+                <h3>Basic Syntax</h3>
+                <ul>
+                    <li><code># Heading 1</code> - Main title</li>
+                    <li><code>## Heading 2</code> - Subtitle</li>
+                    <li><code>**bold**</code> - Bold text</li>
+                    <li><code>*italic*</code> - Italic text</li>
+                    <li><code>- item</code> - List item</li>
+                    <li><code>---</code> - Slide separator</li>
+                </ul>
+                <h3>Presenter Notes</h3>
+                <pre><code>&lt;!-- notes
+Your private notes here
+--&gt;</code></pre>
+            </div>
+        </details>
+    </div>
+
+    <div id="toast" class="toast"></div>
+</div>
+
+<script src="/js/editor.js"></script>

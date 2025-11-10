@@ -3,3 +3,10 @@ _site/
 .env
 npm-debug.log
 .DS_Store
+
+# Keep presentations directory structure but ignore content
+presentations/*.md
+presentations/*.json
+!presentations/default.md
+!presentations/default.json
+!presentations/README.md

@@ -5,7 +5,9 @@ A modern presentation system with dual projection and remote control capabilitie
 ## Features
 
 - **Static Site Generation**: Uses 11ty to build slides from Markdown files
+- **Web-Based Editor**: Edit slides directly in your browser with live preview
 - **Keyboard Navigation**: Navigate slides using arrow keys, space, page up/down, home, and end
+- **Touch/Swipe Support**: Navigate on mobile devices with swipe gestures
 - **Remote Control**: Control presentations from your phone via a presenter view
 - **Presenter Notes**: Private notes visible only in the presenter view
 - **Real-time Sync**: WebSocket-based synchronization between displays and presenters
@@ -30,6 +32,7 @@ This starts both the 11ty dev server and the WebSocket server.
 
 - Presentation: http://localhost:3000
 - Presenter View: http://localhost:3000/presenter
+- Slide Editor: http://localhost:3000/editor
 
 ### Production Build
 
@@ -40,7 +43,18 @@ npm start
 
 ## Creating Slides
 
-Create or edit Markdown files in the `src/slides/` directory. Use `---` to separate slides.
+### Option 1: Using the Web Editor (Recommended)
+
+1. Navigate to http://localhost:3000/editor
+2. Login with your presenter password
+3. Edit slides in the left panel
+4. See live preview on the right
+5. Click "Save" (or press Ctrl/Cmd+S)
+6. Rebuild: `npm run build`
+
+### Option 2: Edit Files Directly
+
+Create or edit `src/index.md` directly. Use `---` to separate slides.
 
 ### Example Slide with Notes
 
@@ -80,6 +94,18 @@ More content
 - On-screen buttons for navigation
 - Shows current slide, next slide, and presenter notes
 
+## Presentations Storage
+
+All presentations are stored in the `presentations/` directory. This directory can be mounted as a persistent volume in Docker/CapRover.
+
+See [PRESENTATIONS.md](PRESENTATIONS.md) for detailed documentation on managing presentations.
+
+### Quick Overview
+
+- Each presentation: `presentations/name.md` + `presentations/name.json`
+- Docker volume: `-v ./presentations:/app/presentations`
+- Survives container restarts and redeployments
+
 ## Deployment on CapRover
 
 ### Prerequisites
@@ -116,16 +142,19 @@ More content
 │   ├── _layouts/          # 11ty layouts
 │   │   ├── base.njk       # Base HTML layout
 │   │   ├── presentation.njk  # Slide presentation layout
-│   │   └── presenter.njk  # Presenter view layout
+│   │   ├── presenter.njk  # Presenter view layout
+│   │   └── editor.njk     # Editor layout
 │   ├── css/               # Stylesheets
 │   │   ├── theme.css      # Main presentation theme
-│   │   └── presenter.css  # Presenter view styles
+│   │   ├── presenter.css  # Presenter view styles
+│   │   └── editor.css     # Editor styles
 │   ├── js/                # JavaScript
 │   │   ├── slides.js      # Slide navigation and WebSocket
-│   │   └── presenter.js   # Presenter view controller
+│   │   ├── presenter.js   # Presenter view controller
+│   │   └── editor.js      # Editor with live preview
 │   ├── slides/            # Markdown slides (add your own)
 │   └── index.md           # Main presentation file
-├── server.js              # Express + WebSocket server
+├── server.js              # Express + WebSocket server + API
 ├── .eleventy.js           # 11ty configuration
 ├── Dockerfile             # Docker configuration
 ├── captain-definition     # CapRover configuration

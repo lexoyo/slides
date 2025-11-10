@@ -112,7 +112,12 @@ function requireAuth(req, res, next) {
     if (req.session.authenticated) {
         next();
     } else {
-        res.redirect('/login');
+        // Check if it's an API request
+        if (req.path.startsWith('/api/')) {
+            res.status(401).json({ error: 'Not authenticated' });
+        } else {
+            res.redirect('/login');
+        }
     }
 }
 
@@ -123,6 +128,14 @@ app.get('/', (req, res) => {
 
 app.get('/presenter', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, '_site', 'presenter', 'index.html'));
+});
+
+app.get('/editor', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, '_site', 'editor', 'index.html'));
+});
+
+app.get('/admin', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, '_site', 'admin', 'index.html'));
 });
 
 app.get('/login', (req, res) => {
@@ -226,7 +239,7 @@ app.post('/login', (req, res) => {
 
     if (password === PRESENTER_PASSWORD) {
         req.session.authenticated = true;
-        res.redirect('/presenter');
+        res.redirect('/admin');
     } else {
         res.redirect('/login?error=1');
     }
@@ -235,6 +248,266 @@ app.post('/login', (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
+});
+
+// API endpoint to list all presentations
+app.get('/api/presentations', requireAuth, (req, res) => {
+    try {
+        const presentationsDir = path.join(__dirname, 'presentations');
+        const files = fs.readdirSync(presentationsDir);
+
+        const presentations = files
+            .filter(file => file.endsWith('.json'))
+            .map(file => {
+                const jsonPath = path.join(presentationsDir, file);
+                const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+                return metadata;
+            });
+
+        res.json({ presentations });
+    } catch (error) {
+        console.error('Error listing presentations:', error);
+        res.status(500).json({ error: 'Failed to list presentations' });
+    }
+});
+
+// API endpoint to get markdown content for editor
+app.get('/api/slides/content', requireAuth, (req, res) => {
+    try {
+        const presentationId = req.query.id || 'default';
+        const mdPath = path.join(__dirname, 'presentations', `${presentationId}.md`);
+        console.log('Loading markdown from:', mdPath);
+        console.log('File exists:', fs.existsSync(mdPath));
+
+        if (fs.existsSync(mdPath)) {
+            const content = fs.readFileSync(mdPath, 'utf8');
+            console.log('File content length:', content.length);
+
+            // Remove frontmatter
+            const contentWithoutFrontmatter = content.replace(/^---[\s\S]*?---\n/, '');
+            console.log('Content after removing frontmatter:', contentWithoutFrontmatter.substring(0, 100));
+
+            res.json({ content: contentWithoutFrontmatter });
+        } else {
+            console.log('File not found, returning empty content');
+            res.json({ content: '' });
+        }
+    } catch (error) {
+        console.error('Error reading markdown file:', error);
+        res.status(500).json({ error: 'Failed to read markdown file' });
+    }
+});
+
+// API endpoint to create new presentation
+app.post('/api/presentations', requireAuth, (req, res) => {
+    try {
+        const { id, title, description } = req.body;
+
+        if (!id || !/^[a-z0-9-]+$/.test(id)) {
+            return res.status(400).json({ error: 'Invalid presentation ID. Use lowercase letters, numbers, and hyphens only.' });
+        }
+
+        const mdPath = path.join(__dirname, 'presentations', `${id}.md`);
+        const jsonPath = path.join(__dirname, 'presentations', `${id}.json`);
+
+        if (fs.existsSync(mdPath) || fs.existsSync(jsonPath)) {
+            return res.status(409).json({ error: 'Presentation already exists' });
+        }
+
+        // Create metadata
+        const metadata = {
+            id,
+            title: title || 'New Presentation',
+            description: description || '',
+            created: new Date().toISOString().split('T')[0],
+            modified: new Date().toISOString().split('T')[0]
+        };
+
+        // Create markdown file
+        const content = `---
+layout: presentation.njk
+title: ${metadata.title}
+eleventyExcludeFromCollections: true
+---
+# ${metadata.title}
+
+Start your presentation here...
+
+---
+
+# Second Slide
+
+Add more content
+`;
+
+        fs.writeFileSync(mdPath, content, 'utf8');
+        fs.writeFileSync(jsonPath, JSON.stringify(metadata, null, 2), 'utf8');
+
+        res.json({ success: true, message: 'Presentation created', presentation: metadata });
+    } catch (error) {
+        console.error('Error creating presentation:', error);
+        res.status(500).json({ error: 'Failed to create presentation' });
+    }
+});
+
+// API endpoint to delete presentation
+app.delete('/api/presentations/:id', requireAuth, (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (id === 'default') {
+            return res.status(403).json({ error: 'Cannot delete default presentation' });
+        }
+
+        const mdPath = path.join(__dirname, 'presentations', `${id}.md`);
+        const jsonPath = path.join(__dirname, 'presentations', `${id}.json`);
+
+        if (fs.existsSync(mdPath)) fs.unlinkSync(mdPath);
+        if (fs.existsSync(jsonPath)) fs.unlinkSync(jsonPath);
+
+        res.json({ success: true, message: 'Presentation deleted' });
+    } catch (error) {
+        console.error('Error deleting presentation:', error);
+        res.status(500).json({ error: 'Failed to delete presentation' });
+    }
+});
+
+// API endpoint to update presentation metadata
+app.patch('/api/presentations/:id', requireAuth, (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, layout } = req.body;
+
+        const jsonPath = path.join(__dirname, 'presentations', `${id}.json`);
+        const mdPath = path.join(__dirname, 'presentations', `${id}.md`);
+
+        if (!fs.existsSync(jsonPath)) {
+            return res.status(404).json({ error: 'Presentation not found' });
+        }
+
+        // Update metadata
+        const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (title) metadata.title = title;
+        if (description !== undefined) metadata.description = description;
+        metadata.modified = new Date().toISOString().split('T')[0];
+        fs.writeFileSync(jsonPath, JSON.stringify(metadata, null, 2), 'utf8');
+
+        // Update frontmatter in markdown if title or layout changed
+        if ((title || layout) && fs.existsSync(mdPath)) {
+            let content = fs.readFileSync(mdPath, 'utf8');
+            const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n/);
+
+            if (frontmatterMatch) {
+                let frontmatter = frontmatterMatch[1];
+                if (title) {
+                    frontmatter = frontmatter.replace(/^title:.*$/m, `title: ${title}`);
+                }
+                if (layout) {
+                    frontmatter = frontmatter.replace(/^layout:.*$/m, `layout: ${layout}`);
+                }
+                content = content.replace(/^---\n[\s\S]*?\n---\n/, `---\n${frontmatter}\n---\n`);
+                fs.writeFileSync(mdPath, content, 'utf8');
+
+                // Also update src/index.md for backwards compatibility
+                const srcPath = path.join(__dirname, 'src', 'index.md');
+                fs.writeFileSync(srcPath, content, 'utf8');
+            }
+        }
+
+        res.json({ success: true, message: 'Presentation updated', presentation: metadata });
+    } catch (error) {
+        console.error('Error updating presentation:', error);
+        res.status(500).json({ error: 'Failed to update presentation' });
+    }
+});
+
+// API endpoint to duplicate presentation
+app.post('/api/presentations/:id/duplicate', requireAuth, (req, res) => {
+    try {
+        const { id } = req.params;
+        const { newId, newTitle } = req.body;
+
+        if (!newId || !/^[a-z0-9-]+$/.test(newId)) {
+            return res.status(400).json({ error: 'Invalid new presentation ID' });
+        }
+
+        const sourceMdPath = path.join(__dirname, 'presentations', `${id}.md`);
+        const sourceJsonPath = path.join(__dirname, 'presentations', `${id}.json`);
+        const targetMdPath = path.join(__dirname, 'presentations', `${newId}.md`);
+        const targetJsonPath = path.join(__dirname, 'presentations', `${newId}.json`);
+
+        if (!fs.existsSync(sourceMdPath)) {
+            return res.status(404).json({ error: 'Source presentation not found' });
+        }
+
+        if (fs.existsSync(targetMdPath)) {
+            return res.status(409).json({ error: 'Target presentation already exists' });
+        }
+
+        // Copy markdown
+        const mdContent = fs.readFileSync(sourceMdPath, 'utf8');
+        fs.writeFileSync(targetMdPath, mdContent, 'utf8');
+
+        // Copy and update metadata
+        const sourceMetadata = JSON.parse(fs.readFileSync(sourceJsonPath, 'utf8'));
+        const newMetadata = {
+            ...sourceMetadata,
+            id: newId,
+            title: newTitle || `${sourceMetadata.title} (Copy)`,
+            created: new Date().toISOString().split('T')[0],
+            modified: new Date().toISOString().split('T')[0]
+        };
+        fs.writeFileSync(targetJsonPath, JSON.stringify(newMetadata, null, 2), 'utf8');
+
+        res.json({ success: true, message: 'Presentation duplicated', presentation: newMetadata });
+    } catch (error) {
+        console.error('Error duplicating presentation:', error);
+        res.status(500).json({ error: 'Failed to duplicate presentation' });
+    }
+});
+
+// API endpoint to save markdown content
+app.post('/api/slides/content', requireAuth, (req, res) => {
+    try {
+        const { content, id } = req.body;
+        if (typeof content !== 'string') {
+            return res.status(400).json({ error: 'Invalid content' });
+        }
+
+        const presentationId = id || 'default';
+        const mdPath = path.join(__dirname, 'presentations', `${presentationId}.md`);
+        const jsonPath = path.join(__dirname, 'presentations', `${presentationId}.json`);
+
+        // Read existing file to preserve frontmatter
+        let frontmatter = '---\nlayout: presentation.njk\ntitle: My Presentation\neleventyExcludeFromCollections: true\n---\n';
+        if (fs.existsSync(mdPath)) {
+            const existingContent = fs.readFileSync(mdPath, 'utf8');
+            const frontmatterMatch = existingContent.match(/^---[\s\S]*?---\n/);
+            if (frontmatterMatch) {
+                frontmatter = frontmatterMatch[0];
+            }
+        }
+
+        // Write the markdown file with frontmatter
+        const fullContent = frontmatter + content;
+        fs.writeFileSync(mdPath, fullContent, 'utf8');
+
+        // Update metadata modified date
+        if (fs.existsSync(jsonPath)) {
+            const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+            metadata.modified = new Date().toISOString().split('T')[0];
+            fs.writeFileSync(jsonPath, JSON.stringify(metadata, null, 2), 'utf8');
+        }
+
+        // Also update src/index.md for backwards compatibility
+        const srcPath = path.join(__dirname, 'src', 'index.md');
+        fs.writeFileSync(srcPath, fullContent, 'utf8');
+
+        res.json({ success: true, message: 'Content saved successfully' });
+    } catch (error) {
+        console.error('Error saving markdown file:', error);
+        res.status(500).json({ error: 'Failed to save markdown file' });
+    }
 });
 
 // API endpoint to get slides data

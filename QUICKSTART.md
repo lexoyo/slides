@@ -13,6 +13,8 @@ npm start
 - **Slides**: http://localhost:3000
 - **Remote Control**: http://localhost:3000/presenter
   - Password: `presenter123`
+- **Editor**: http://localhost:3000/editor
+  - Password: `presenter123`
 
 ## How to Use
 
@@ -26,6 +28,14 @@ npm start
 - Navigate slides - the main display will follow
 
 ### 3. Edit Slides
+
+**Option A: Use the Web Editor**
+- Open http://localhost:3000/editor
+- Edit in browser with live preview
+- Save with Ctrl/Cmd+S or click Save button
+- Rebuild with `npm run build`
+
+**Option B: Edit Files Directly**
 - Edit `src/index.md`
 - Separate slides with `---`
 - Add notes with HTML comments:

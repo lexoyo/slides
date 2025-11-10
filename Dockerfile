@@ -15,6 +15,11 @@ RUN npm install --save-dev @11ty/eleventy
 # Copy application files
 COPY . .
 
+# Create presentations directory and copy default presentation
+RUN mkdir -p /app/presentations
+COPY presentations/default.* /app/presentations/
+COPY presentations/README.md /app/presentations/
+
 # Build the 11ty site
 RUN npm run build
 
@@ -23,6 +28,9 @@ EXPOSE 3000
 
 # Set environment to production
 ENV NODE_ENV=production
+
+# Volume for presentations (persistent data)
+VOLUME ["/app/presentations"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
