@@ -273,10 +273,31 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const { password } = req.body;
 
+    console.log('=== LOGIN ATTEMPT ===');
+    console.log('Session ID:', req.sessionID);
+    console.log('Session data before:', JSON.stringify(req.session));
+    console.log('Password received:', password ? '[PROVIDED]' : '[MISSING]');
+    console.log('Password length:', password ? password.length : 0);
+    console.log('Expected password length:', PRESENTER_PASSWORD.length);
+    console.log('Passwords match:', password === PRESENTER_PASSWORD);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Cookies:', req.headers.cookie);
+
     if (password === PRESENTER_PASSWORD) {
         req.session.authenticated = true;
-        res.redirect('/admin');
+        console.log('✓ Login successful, setting session.authenticated = true');
+        console.log('Session data after:', JSON.stringify(req.session));
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+            } else {
+                console.log('Session saved successfully');
+            }
+            res.redirect('/admin');
+        });
     } else {
+        console.log('✗ Login failed - password mismatch');
         res.redirect('/login?error=1');
     }
 });
