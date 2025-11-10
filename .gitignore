@@ -3,6 +3,7 @@ _site/
 .env
 npm-debug.log
 .DS_Store
+.sessions/
 
 # Keep presentations directory structure but ignore content
 presentations/*.md

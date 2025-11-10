@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
@@ -23,6 +24,11 @@ app.set('trust proxy', 1);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
+    store: new FileStore({
+        path: path.join(__dirname, '.sessions'),
+        ttl: 24 * 60 * 60, // 24 hours in seconds
+        retries: 0
+    }),
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
