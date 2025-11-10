@@ -81,6 +81,13 @@ class SlideEditor {
         this.prevSlideBtn.addEventListener('click', () => this.navigateSlide(-1));
         this.nextSlideBtn.addEventListener('click', () => this.navigateSlide(1));
 
+        // Image upload button
+        const uploadInput = document.getElementById('image-upload');
+        uploadInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+        // Drag and drop
+        this.setupDragAndDrop();
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Ctrl/Cmd + S to save
@@ -89,6 +96,96 @@ class SlideEditor {
                 this.saveContent();
             }
         });
+    }
+
+    setupDragAndDrop() {
+        const editorWrapper = document.querySelector('.editor-wrapper');
+        const overlay = document.getElementById('upload-overlay');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            editorWrapper.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        editorWrapper.addEventListener('dragenter', () => {
+            overlay.classList.add('active');
+        });
+
+        editorWrapper.addEventListener('dragleave', (e) => {
+            if (e.target === editorWrapper) {
+                overlay.classList.remove('active');
+            }
+        });
+
+        editorWrapper.addEventListener('drop', (e) => {
+            overlay.classList.remove('active');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                this.uploadImage(files[0]);
+            }
+        });
+    }
+
+    handleFileSelect(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            this.uploadImage(files[0]);
+        }
+    }
+
+    async uploadImage(file) {
+        if (!file.type.startsWith('image/')) {
+            this.showToast('Please select an image file', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        this.showToast('Uploading image...', 'info');
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (response.ok) {
+                const data = await response.json();
+                this.insertImageMarkdown(data.url, file.name);
+                this.showToast('Image uploaded!');
+            } else {
+                const error = await response.json();
+                this.showToast(error.error || 'Upload failed', 'error');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            this.showToast('Upload failed', 'error');
+        }
+    }
+
+    insertImageMarkdown(url, altText) {
+        const cursorPos = this.editor.selectionStart;
+        const textBefore = this.editor.value.substring(0, cursorPos);
+        const textAfter = this.editor.value.substring(cursorPos);
+
+        const markdown = `![${altText}](${url})`;
+        this.editor.value = textBefore + markdown + textAfter;
+
+        // Move cursor after inserted markdown
+        const newCursorPos = cursorPos + markdown.length;
+        this.editor.setSelectionRange(newCursorPos, newCursorPos);
+        this.editor.focus();
+
+        // Update preview
+        this.updatePreview();
     }
 
     updatePreview() {
@@ -129,6 +226,12 @@ class SlideEditor {
     markdownToHtml(markdown) {
         let html = markdown;
 
+        // Images (must be before links)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
         // Headers
         html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
         html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
@@ -145,9 +248,6 @@ class SlideEditor {
 
         // Code blocks
         html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-
-        // Links
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
 
         // Unordered lists
         html = html.replace(/^\- (.+)$/gim, '<li>$1</li>');

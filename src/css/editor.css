@@ -107,9 +107,36 @@ body {
     color: #e5e7eb;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-upload {
+    padding: 0.5rem 1rem;
+    background: #10b981;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-upload:hover {
+    background: #059669;
+}
+
 .help-text {
     font-size: 0.85rem;
     color: #a0aec0;
+}
+
+.editor-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
 }
 
 .markdown-textarea {
@@ -305,6 +332,35 @@ body {
 
 .toast.info {
     background: #3b82f6;
+}
+
+/* Upload overlay */
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(45, 55, 72, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border: 3px dashed #667eea;
+    border-radius: 8px;
+    margin: 0.5rem;
+}
+
+.upload-overlay.active {
+    display: flex;
+}
+
+.upload-message {
+    font-size: 1.5rem;
+    color: #667eea;
+    font-weight: 600;
+    text-align: center;
+    padding: 2rem;
 }
 
 /* Responsive design */

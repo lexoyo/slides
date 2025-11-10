@@ -10,3 +10,7 @@ presentations/*.json
 !presentations/default.md
 !presentations/default.json
 !presentations/README.md
+
+# Ignore uploaded assets
+presentations/assets/*
+!presentations/assets/.gitkeep

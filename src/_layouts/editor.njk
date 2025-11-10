@@ -19,9 +19,22 @@ layout: base.njk
         <div class="editor-pane">
             <div class="pane-header">
                 <h2>Markdown Editor</h2>
-                <span class="help-text">Use --- to separate slides</span>
+                <div class="header-actions">
+                    <label for="image-upload" class="btn-upload" title="Upload image">
+                        📎 Upload Image
+                    </label>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                    <span class="help-text">Use --- to separate slides</span>
+                </div>
             </div>
-            <textarea id="markdown-editor" class="markdown-textarea"></textarea>
+            <div class="editor-wrapper">
+                <textarea id="markdown-editor" class="markdown-textarea"></textarea>
+                <div id="upload-overlay" class="upload-overlay">
+                    <div class="upload-message">
+                        📷 Drop image here to upload
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="preview-pane" id="preview-pane">
