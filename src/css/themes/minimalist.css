@@ -145,6 +145,33 @@ body {
     margin: 1.5rem 0;
 }
 
+.slide-content table.slide-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    table-layout: fixed;
+}
+
+.slide-content table.slide-table thead {
+    display: none;
+}
+
+.slide-content table.slide-table td {
+    vertical-align: top;
+    padding: 0 2rem;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    width: auto;
+}
+
+.slide-content table.slide-table td:first-child {
+    padding-left: 0;
+}
+
+.slide-content table.slide-table td:last-child {
+    padding-right: 0;
+}
+
 .slide-number {
     position: fixed;
     bottom: 1.5rem;

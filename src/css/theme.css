@@ -149,6 +149,7 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin: 1.5rem 0;
+    table-layout: fixed;
 }
 
 .slide-content table.slide-table thead {
@@ -160,6 +161,7 @@ body {
     padding: 0 2rem;
     font-size: 1.25rem;
     line-height: 1.7;
+    width: auto;
 }
 
 .slide-content table.slide-table td:first-child {

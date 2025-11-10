@@ -7,6 +7,12 @@ eleventyExcludeFromCollections: true
 
 Start your presentation here...
 
+<!--
+
+test notes
+
+-->
+
 ---
 
 # Second Slide
