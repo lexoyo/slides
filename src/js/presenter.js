@@ -72,11 +72,11 @@ class PresenterController {
 
         slideContents.forEach((slideContent, index) => {
             // Extract notes
-            const notesMatch = slideContent.match(/<!--\s*notes\s*\n([\s\S]*?)\n-->/i);
+            const notesMatch = slideContent.match(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/i);
             const notes = notesMatch ? notesMatch[1].trim() : '';
 
             // Remove notes from content
-            const contentWithoutNotes = slideContent.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+            const contentWithoutNotes = slideContent.replace(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/gi, '');
 
             // Convert markdown to HTML
             const htmlContent = this.markdownToHtml(contentWithoutNotes);

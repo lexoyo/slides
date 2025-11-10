@@ -117,7 +117,7 @@ class SlideController {
             slide.setAttribute('data-slide-index', index);
 
             // Remove presenter notes (if any)
-            const contentWithoutNotes = slideContent.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+            const contentWithoutNotes = slideContent.replace(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/gi, '');
 
             const slideDiv = document.createElement('div');
             slideDiv.className = 'slide-content';
