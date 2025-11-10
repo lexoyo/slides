@@ -617,5 +617,13 @@ server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Presentation: http://localhost:${PORT}`);
     console.log(`Presenter view: http://localhost:${PORT}/presenter`);
-    console.log(`Default presenter password: ${PRESENTER_PASSWORD}`);
+    console.log(`Admin dashboard: http://localhost:${PORT}/admin`);
+
+    // Only log password if it's the default one (for security)
+    if (PRESENTER_PASSWORD === 'presenter123') {
+        console.log(`⚠️  Using DEFAULT password: ${PRESENTER_PASSWORD}`);
+        console.log(`⚠️  Change PRESENTER_PASSWORD environment variable in production!`);
+    } else {
+        console.log(`✓ Custom password configured`);
+    }
 });
