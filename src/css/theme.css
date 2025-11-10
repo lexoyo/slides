@@ -191,7 +191,7 @@ body {
 }
 
 .split-image {
-    flex: 0 0 50%;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -211,7 +211,7 @@ body {
     justify-content: center;
 }
 .split-text-right {
-    text-align: right;
+    align-items: end;
 }
 
 /* Responsive design */

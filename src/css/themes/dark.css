@@ -222,7 +222,7 @@ body {
 }
 
 .split-text-right {
-    text-align: right;
+    align-items: end;
 }
 
 /* Responsive design */
