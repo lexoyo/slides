@@ -38,14 +38,8 @@ jobs:
             echo "token=${{ secrets.APP_TOKEN }}" >> $GITHUB_OUTPUT
           fi
 
-      - uses: a7ul/tar-action@v1.1.0
-        with:
-          command: c
-          cwd: "./"
-          files: |
-            *
-            .*
-          outPath: deploy.tar
+      - name: Archive tracked files
+        run: git archive -o deploy.tar HEAD
 
       - name: Deploy to CapRover
         uses: caprover/deploy-from-github@v1.0.1
