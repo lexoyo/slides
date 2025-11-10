@@ -149,6 +149,7 @@ body {
 
 .slide-content img {
     max-width: 100%;
+    width: fit-content;
     height: auto;
     display: block;
     margin: 1.5rem 0;
