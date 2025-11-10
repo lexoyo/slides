@@ -47,4 +47,3 @@ jobs:
           server: ${{ secrets.CAPROVER_SERVER }}
           app: ${{ steps.app-info.outputs.app }}
           token: ${{ steps.app-info.outputs.token }}
-          branch: ${{ github.ref_name }}
