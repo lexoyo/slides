@@ -1,65 +1,55 @@
 ---
 layout: presentation.njk
-title: ccc
+title: NLUUG 2025
 eleventyExcludeFromCollections: true
 ---
-# ccc xxx
+# Less Maintenance, More Freedom
+## Rethinking website production<br>with Silex and WordPress
 
-Start your presentation here...
-
-<!--
-
-test notes 1
-
-
-|a|b|
-|--|--|
-|test text| tableau |
-
-> quelles solutions pour avoir une image de fond dans un slide? et pour avoir une image a gauche qui prend toute la hauteur et un texte a droite? 
-
--->
+> November 20, 2025, 14:50–15:35, Utrecht, NL
+> Duration 00:45
 
 ---
+# Alex Hoyau
 
-# Second Slide
-left:/assets/1762796726726-640415235.jpg
+> **Silex**.me
+> **Internet2000**.net
+---
+# THE
+---
+# THE INTER
+---
+# THE INTERNOODLES
+---
+left: /assets/1762797661624-792867616.png
 
-Add more content
-
-|a|b|
-|--|--|
-|test text|![Silex Formations Fr.png](/assets/1762795120897-147794583.png)|
-
-aaa
-
+# THE INTERNOODLES
+---
+bg: /assets/1762798797506-527313988.png
+---
+bg: /assets/1762797661624-792867616.png
 <!--
-
-test notes 2
-
-* a
-* b
-* list
-
++Linux
 -->
+---
+left: /assets/1762799221011-140781438.png
+# WordPress
+---
+right: /assets/1762800304681-592983186.png
+# WordStress?
+---
+left: /assets/1762800749204-824648205.png
+# WordPress
+## Headless
 
 ---
+right: /assets/1762800678984-762893169.png
+# WordStress
+## Headless
+---
+left: /assets/1762810930614-381520205.png
+# WordPress
+## Headless w/ No-Code
 
 
-> test notes 3
 
-
-|a|b|
-|--|--|
-|test text| tableau |
-
-<!--
-
-test notes 3
-
-
-|a|b|
-|--|--|
-|test text| tableau |
-
--->
