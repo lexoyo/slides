@@ -81,6 +81,7 @@ body {
     border: none;
     border-radius: 8px;
     background: #ffffff;
+    pointer-events: none;
 }
 
 .presenter-notes-panel {

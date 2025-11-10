@@ -377,14 +377,17 @@ class PresenterController {
         // Update current slide iframe
         const currentSlide = this.slides[this.currentIndex];
         if (this.currentSlideEl) {
-            this.currentSlideEl.src = `/?id=${this.presentationId}#${this.currentIndex}`;
+            // Force reload by adding timestamp to avoid cache
+            const timestamp = Date.now();
+            this.currentSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex}`;
         }
 
         // Update next slide iframe
         const nextSlide = this.slides[this.currentIndex + 1];
         if (this.nextSlideEl) {
             if (nextSlide) {
-                this.nextSlideEl.src = `/?id=${this.presentationId}#${this.currentIndex + 1}`;
+                const timestamp = Date.now();
+                this.nextSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex + 1}`;
             } else {
                 // Show empty slide for end of presentation
                 this.nextSlideEl.src = 'about:blank';
