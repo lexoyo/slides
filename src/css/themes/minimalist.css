@@ -151,7 +151,7 @@ body {
     max-width: 100%;
     width: fit-content;
     height: auto;
-    display: block;
+    display: inline-block;
     margin: 1.5rem 0;
 }
 
