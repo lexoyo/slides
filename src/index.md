@@ -12,3 +12,7 @@ Start your presentation here...
 # Second Slide
 
 Add more content
+
+|a|b|
+|--|--|
+|a|b|

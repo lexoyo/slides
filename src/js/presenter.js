@@ -87,6 +87,9 @@ class PresenterController {
     markdownToHtml(markdown) {
         let html = markdown;
 
+        // Tables (must be early)
+        html = this.parseMarkdownTables(html);
+
         // Images (must be before links)
         html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
 
@@ -119,13 +122,63 @@ class PresenterController {
 
         // Paragraphs
         html = html.split('\n\n').map(para => {
-            if (!para.match(/^<[huplodiv]/)) {
+            if (!para.match(/^<[huplodivt]/)) {
                 return `<p>${para.replace(/\n/g, '<br>')}</p>`;
             }
             return para;
         }).join('\n');
 
         return html;
+    }
+
+    parseMarkdownTables(markdown) {
+        const lines = markdown.split('\n');
+        let result = [];
+        let i = 0;
+
+        while (i < lines.length) {
+            const line = lines[i];
+
+            if (line.includes('|') && i + 1 < lines.length) {
+                const nextLine = lines[i + 1];
+
+                if (nextLine.includes('|') && nextLine.includes('-')) {
+                    const headers = line.split('|').map(h => h.trim()).filter(h => h);
+                    let tableRows = [];
+
+                    i += 2;
+
+                    while (i < lines.length && lines[i].includes('|')) {
+                        const cells = lines[i].split('|').map(c => c.trim()).filter(c => c);
+                        tableRows.push(cells);
+                        i++;
+                    }
+
+                    let tableHtml = '<table class="slide-table"><thead><tr>';
+                    headers.forEach(h => {
+                        tableHtml += `<th>${h}</th>`;
+                    });
+                    tableHtml += '</tr></thead><tbody>';
+
+                    tableRows.forEach(row => {
+                        tableHtml += '<tr>';
+                        row.forEach(cell => {
+                            tableHtml += `<td>${cell}</td>`;
+                        });
+                        tableHtml += '</tr>';
+                    });
+
+                    tableHtml += '</tbody></table>';
+                    result.push(tableHtml);
+                    continue;
+                }
+            }
+
+            result.push(line);
+            i++;
+        }
+
+        return result.join('\n');
     }
 
     async loadTheme() {
