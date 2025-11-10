@@ -79,6 +79,11 @@ class SlideController {
                 const metadata = await response.json();
                 const theme = metadata.theme || 'minimalist';
                 this.applyTheme(theme);
+
+                // Update page title if title is provided
+                if (metadata.title) {
+                    document.title = metadata.title;
+                }
             }
         } catch (error) {
             console.error('Error loading theme:', error);
@@ -138,7 +143,7 @@ class SlideController {
                 slideDiv.classList.add('split-layout');
                 const imageDiv = document.createElement('div');
                 imageDiv.className = `split-image split-image-${layoutPosition}`;
-                imageDiv.innerHTML = `<img src="${layoutImage}" alt="">`;
+                imageDiv.innerHTML = `<img src="${layoutImage}" alt="" loading="eager">`;
 
                 const textDiv = document.createElement('div');
                 textDiv.className = `split-text split-text-${layoutPosition}`;
@@ -204,7 +209,7 @@ class SlideController {
         html = this.parseMarkdownTables(html);
 
         // Images (must be before links)
-        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="eager" style="max-width: 100%; height: auto;">');
 
         // Links
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
