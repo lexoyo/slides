@@ -141,7 +141,7 @@ class SlideController {
                 imageDiv.innerHTML = `<img src="${layoutImage}" alt="">`;
 
                 const textDiv = document.createElement('div');
-                textDiv.className = 'split-text';
+                textDiv.className = `split-text split-text-${layoutPosition}`;
                 textDiv.innerHTML = this.markdownToHtml(content);
 
                 if (layoutPosition === 'left') {

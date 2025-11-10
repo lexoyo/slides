@@ -211,6 +211,10 @@ body {
     justify-content: center;
 }
 
+.split-text-right {
+    text-align: right;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .slide {
