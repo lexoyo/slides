@@ -27,7 +27,12 @@ class PresenterController {
         // Setup controls
         this.setupControls();
 
-        // Show first slide
+        // Restore slide from URL hash or show first slide
+        const hash = window.location.hash;
+        const slideIndex = hash ? parseInt(hash.substring(1)) : 0;
+        this.currentIndex = Math.max(0, Math.min(slideIndex, this.slides.length - 1));
+
+        // Show initial slide
         this.updatePresenterView();
     }
 
@@ -414,6 +419,9 @@ class PresenterController {
         if (index >= 0 && index < this.slides.length) {
             this.currentIndex = index;
             this.updatePresenterView();
+
+            // Update URL hash
+            window.location.hash = index;
 
             // Broadcast to WebSocket
             if (broadcast && this.ws && this.ws.readyState === WebSocket.OPEN) {

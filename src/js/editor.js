@@ -2,17 +2,13 @@
 class SlideEditor {
     constructor() {
         this.editor = document.getElementById('markdown-editor');
-        this.previewContent = document.getElementById('preview-content');
+        this.previewIframe = document.getElementById('preview-iframe');
         this.saveBtn = document.getElementById('save-btn');
         this.previewBtn = document.getElementById('preview-btn');
-        this.prevSlideBtn = document.getElementById('prev-slide-btn');
-        this.nextSlideBtn = document.getElementById('next-slide-btn');
-        this.slideIndicator = document.getElementById('slide-indicator');
+        this.refreshPreviewBtn = document.getElementById('refresh-preview-btn');
         this.toast = document.getElementById('toast');
         this.themeSelector = document.getElementById('theme-selector');
 
-        this.currentSlideIndex = 0;
-        this.slides = [];
         this.debounceTimer = null;
         this.currentTheme = 'minimalist';
 
@@ -31,8 +27,8 @@ class SlideEditor {
         // Setup event listeners
         this.setupEventListeners();
 
-        // Initial preview render
-        this.updatePreview();
+        // Load preview iframe
+        this.loadPreview();
     }
 
     async loadMetadata() {
@@ -85,23 +81,16 @@ class SlideEditor {
     }
 
     setupEventListeners() {
-        // Editor input with debounce
-        this.editor.addEventListener('input', () => {
-            clearTimeout(this.debounceTimer);
-            this.debounceTimer = setTimeout(() => {
-                this.updatePreview();
-            }, 300);
-        });
-
         // Save button
         this.saveBtn.addEventListener('click', () => this.saveContent());
 
         // Preview toggle (for mobile)
-        this.previewBtn.addEventListener('click', () => this.togglePreview());
+        if (this.previewBtn) {
+            this.previewBtn.addEventListener('click', () => this.togglePreview());
+        }
 
-        // Slide navigation
-        this.prevSlideBtn.addEventListener('click', () => this.navigateSlide(-1));
-        this.nextSlideBtn.addEventListener('click', () => this.navigateSlide(1));
+        // Refresh preview button
+        this.refreshPreviewBtn.addEventListener('click', () => this.loadPreview());
 
         // Image upload button
         const uploadInput = document.getElementById('image-upload');
@@ -199,6 +188,10 @@ class SlideEditor {
         }
     }
 
+    loadPreview() {
+        this.previewIframe.src = `/?id=${this.presentationId}`;
+    }
+
     insertImageMarkdown(url, altText) {
         const cursorPos = this.editor.selectionStart;
         const textBefore = this.editor.value.substring(0, cursorPos);
@@ -211,164 +204,8 @@ class SlideEditor {
         const newCursorPos = cursorPos + markdown.length;
         this.editor.setSelectionRange(newCursorPos, newCursorPos);
         this.editor.focus();
-
-        // Update preview
-        this.updatePreview();
     }
 
-    updatePreview() {
-        const content = this.editor.value;
-
-        // Split into slides
-        this.slides = content.split(/\n---+\n/).filter(slide => slide.trim());
-
-        // Ensure current slide index is valid
-        if (this.currentSlideIndex >= this.slides.length) {
-            this.currentSlideIndex = Math.max(0, this.slides.length - 1);
-        }
-
-        // Render current slide
-        this.renderSlide(this.currentSlideIndex);
-
-        // Update navigation
-        this.updateNavigation();
-    }
-
-    renderSlide(index) {
-        if (this.slides.length === 0) {
-            this.previewContent.innerHTML = '<p style="opacity: 0.5;">Start typing to see preview...</p>';
-            return;
-        }
-
-        const slide = this.slides[index] || '';
-
-        // Remove presenter notes for preview
-        const slideWithoutNotes = slide.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
-
-        // Convert markdown to HTML (simple conversion)
-        const html = this.markdownToHtml(slideWithoutNotes);
-
-        this.previewContent.innerHTML = html;
-    }
-
-    markdownToHtml(markdown) {
-        let html = markdown;
-
-        // Tables (must be early)
-        html = this.parseMarkdownTables(html);
-
-        // Images (must be before links)
-        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
-
-        // Links
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-
-        // Headers
-        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-        html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-        html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-        // Bold
-        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-        // Italic
-        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-        // Code inline
-        html = html.replace(/`(.+?)`/g, '<code>$1</code>');
-
-        // Code blocks
-        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-
-        // Unordered lists
-        html = html.replace(/^\- (.+)$/gim, '<li>$1</li>');
-        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-
-        // Ordered lists
-        html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>');
-
-        // Paragraphs
-        html = html.split('\n\n').map(para => {
-            if (!para.match(/^<[huplodivt]/)) {
-                return `<p>${para.replace(/\n/g, '<br>')}</p>`;
-            }
-            return para;
-        }).join('\n');
-
-        return html;
-    }
-
-    parseMarkdownTables(markdown) {
-        const lines = markdown.split('\n');
-        let result = [];
-        let i = 0;
-
-        while (i < lines.length) {
-            const line = lines[i];
-
-            if (line.includes('|') && i + 1 < lines.length) {
-                const nextLine = lines[i + 1];
-
-                if (nextLine.includes('|') && nextLine.includes('-')) {
-                    const headers = line.split('|').map(h => h.trim()).filter(h => h);
-                    let tableRows = [];
-
-                    i += 2;
-
-                    while (i < lines.length && lines[i].includes('|')) {
-                        const cells = lines[i].split('|').map(c => c.trim()).filter(c => c);
-                        tableRows.push(cells);
-                        i++;
-                    }
-
-                    let tableHtml = '<table class="slide-table"><thead><tr>';
-                    headers.forEach(h => {
-                        tableHtml += `<th>${h}</th>`;
-                    });
-                    tableHtml += '</tr></thead><tbody>';
-
-                    tableRows.forEach(row => {
-                        tableHtml += '<tr>';
-                        row.forEach(cell => {
-                            tableHtml += `<td>${cell}</td>`;
-                        });
-                        tableHtml += '</tr>';
-                    });
-
-                    tableHtml += '</tbody></table>';
-                    result.push(tableHtml);
-                    continue;
-                }
-            }
-
-            result.push(line);
-            i++;
-        }
-
-        return result.join('\n');
-    }
-
-    navigateSlide(direction) {
-        const newIndex = this.currentSlideIndex + direction;
-
-        if (newIndex >= 0 && newIndex < this.slides.length) {
-            this.currentSlideIndex = newIndex;
-            this.renderSlide(this.currentSlideIndex);
-            this.updateNavigation();
-        }
-    }
-
-    updateNavigation() {
-        if (this.slides.length === 0) {
-            this.slideIndicator.textContent = 'No slides';
-            this.prevSlideBtn.disabled = true;
-            this.nextSlideBtn.disabled = true;
-        } else {
-            this.slideIndicator.textContent = `Slide ${this.currentSlideIndex + 1} / ${this.slides.length}`;
-            this.prevSlideBtn.disabled = this.currentSlideIndex === 0;
-            this.nextSlideBtn.disabled = this.currentSlideIndex >= this.slides.length - 1;
-        }
-    }
 
     async saveContent() {
         const content = this.editor.value;

@@ -30,8 +30,10 @@ class SlideController {
             return;
         }
 
-        // Show first slide
-        this.showSlide(0);
+        // Restore slide from URL hash or show first slide
+        const hash = window.location.hash;
+        const slideIndex = hash ? parseInt(hash.substring(1)) : 0;
+        this.showSlide(slideIndex);
 
         // Setup keyboard navigation
         this.setupKeyboardNavigation();
@@ -345,6 +347,11 @@ class SlideController {
     }
 
     showSlide(index) {
+        // Validate index
+        if (index < 0 || index >= this.slides.length) {
+            index = 0;
+        }
+
         this.slides.forEach((slide, i) => {
             if (i === index) {
                 slide.classList.add('active');
@@ -355,6 +362,9 @@ class SlideController {
 
         this.currentIndex = index;
         this.updateSlideNumber();
+
+        // Update URL hash
+        window.location.hash = index;
     }
 
     nextSlide() {

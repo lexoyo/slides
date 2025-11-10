@@ -15,4 +15,6 @@ Add more content
 
 |a|b|
 |--|--|
-|c|d|
+|test text|![Silex Formations Fr.png](/assets/1762795120897-147794583.png)|
+
+aaa
