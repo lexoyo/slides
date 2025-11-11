@@ -1,12 +1,19 @@
 ---
 layout: base.njk
 ---
+{% set processedSlides = rawContent | processSlides %}
 <div class="presentation-container">
     <header class="presentation-header">
-        <h1 class="presentation-title">{{ title }}</h1>
+        <h1 class="presentation-title">
+            <span class="title-text">{{ title }}</span>
+            <span class="title-meta">
+                <span class="nav-arrow">←</span>
+                <span class="slide-counter">1 / {{ processedSlides.length }}</span>
+                <span class="nav-arrow">→</span>
+            </span>
+        </h1>
     </header>
     <div class="slides">
-        {% set processedSlides = rawContent | processSlides %}
         {% for slide in processedSlides %}
         <section class="slide" data-slide-index="{{ slide.index }}"{% if slide.theme %} data-theme="{{ slide.theme }}"{% endif %}>
             <div class="slide-content">
@@ -18,7 +25,6 @@ layout: base.njk
         </section>
         {% endfor %}
     </div>
-    <div class="slide-number"></div>
 </div>
 
 <script src="/js/slides.js"></script>

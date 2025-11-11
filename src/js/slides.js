@@ -498,9 +498,19 @@ class SlideController {
     }
 
     updateSlideNumber() {
-        const slideNumber = document.querySelector('.slide-number');
-        if (slideNumber) {
-            slideNumber.textContent = `${this.currentIndex + 1} / ${this.slides.length}`;
+        // Update the counter in the header
+        const slideCounter = document.querySelector('.slide-counter');
+        if (slideCounter) {
+            slideCounter.textContent = `${this.currentIndex + 1} / ${this.slides.length}`;
+        }
+
+        // Show/hide navigation arrows based on position
+        const navArrows = document.querySelectorAll('.nav-arrow');
+        if (navArrows.length === 2) {
+            // Hide left arrow on first slide
+            navArrows[0].style.visibility = this.currentIndex === 0 ? 'hidden' : 'visible';
+            // Hide right arrow on last slide
+            navArrows[1].style.visibility = this.currentIndex === this.slides.length - 1 ? 'hidden' : 'visible';
         }
     }
 }
