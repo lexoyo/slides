@@ -80,7 +80,6 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 6rem 4rem 4rem 4rem;
     background: #ffffff;
     opacity: 0;
     transition: opacity 0.3s ease;

@@ -30,15 +30,14 @@ eleventyExcludeFromCollections: true
 
 
 ---
-right: /assets/1762821851453-347248336.png
-
+right: /assets/1762856407244-404287919.png
 # THE INTERNOODLES
 ---
 theme: dark
-left: /assets/1762821686589-682292199.png
+left: /assets/1762856159397-594707190.png
 # THE INTERNOODLES
 ---
-right: /assets/1762821851453-347248336.png
+right: /assets/1762856407244-404287919.png
 
 # THE INTERNOODLES
 <!--

@@ -34,7 +34,6 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 4rem;
     background: #1a1a1a;
     opacity: 0;
     transition: opacity 0.3s ease;
