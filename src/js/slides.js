@@ -21,6 +21,10 @@ class SlideController {
             this.presentationId = urlId;
             await this.loadPresentation();
             await this.loadTheme();
+        } else {
+            // For static presentations, try to get default theme from page data or use 'light'
+            const metaTheme = document.querySelector('meta[name="presentation-theme"]');
+            this.defaultTheme = metaTheme ? metaTheme.content : 'light';
         }
 
         // Get slides from DOM (either pre-rendered or dynamically loaded)
@@ -34,15 +38,6 @@ class SlideController {
         // Restore slide from URL hash or show first slide
         const hash = window.location.hash;
         const slideIndex = hash ? parseInt(hash.substring(1)) : 0;
-
-        // Check if the initial slide has a theme and apply it
-        const initialSlide = this.slides[slideIndex];
-        if (initialSlide) {
-            const initialTheme = initialSlide.getAttribute('data-theme');
-            if (initialTheme) {
-                this.applyTheme(initialTheme);
-            }
-        }
 
         this.showSlide(slideIndex);
 
@@ -89,6 +84,7 @@ class SlideController {
             if (response.ok) {
                 const metadata = await response.json();
                 const theme = metadata.theme || 'light';
+                this.defaultTheme = theme; // Store the presentation's default theme
                 this.applyTheme(theme);
 
                 // Update page title if title is provided
@@ -455,10 +451,13 @@ class SlideController {
             if (i === index) {
                 slide.classList.add('active');
 
-                // Apply theme if this slide has a theme directive
+                // Apply theme: if slide has theme directive, use it; otherwise revert to default
                 const slideTheme = slide.getAttribute('data-theme');
                 if (slideTheme) {
                     this.applyTheme(slideTheme);
+                } else {
+                    // Revert to presentation's default theme
+                    this.applyTheme(this.defaultTheme);
                 }
             } else {
                 slide.classList.remove('active');
