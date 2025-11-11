@@ -19,6 +19,22 @@ module.exports = function(eleventyConfig) {
     return content.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
   });
 
+  // Extract background images from bg: directives
+  eleventyConfig.addFilter("extractBgImages", function(rawContent) {
+    const bgImages = [];
+    const slides = rawContent.split(/\n---+\n/);
+    slides.forEach(slide => {
+      const bgMatch = slide.match(/^bg:\s*(.+)$/m);
+      if (bgMatch) {
+        const bgImage = bgMatch[1].trim();
+        if (bgImage && !bgImages.includes(bgImage)) {
+          bgImages.push(bgImage);
+        }
+      }
+    });
+    return bgImages;
+  });
+
   // Process raw markdown content before template processing
   eleventyConfig.addFilter("processSlides", function(rawContent) {
     // Split by --- separator

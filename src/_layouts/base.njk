@@ -9,6 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/theme.css">
     {% block head %}{% endblock %}
+    {# Preload background images if this is a presentation #}
+    {% if rawContent %}
+        {% set bgImages = rawContent | extractBgImages %}
+        {% for bgImage in bgImages %}
+    <link rel="preload" as="image" href="{{ bgImage }}">
+        {% endfor %}
+    {% endif %}
 </head>
 <body>
     {% block content %}
