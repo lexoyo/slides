@@ -68,6 +68,10 @@ body {
     padding: 1rem;
 }
 
+.next-slide-preview {
+    opacity: 0.5;
+}
+
 .current-slide-preview h2,
 .next-slide-preview h2 {
     font-size: 1.2rem;
@@ -81,6 +85,27 @@ body {
     border: none;
     border-radius: 8px;
     background: #ffffff;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.slide-preview-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.slide-preview-iframe-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    border: none;
+    transform-origin: 0 0;
     pointer-events: none;
 }
 

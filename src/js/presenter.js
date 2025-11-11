@@ -232,6 +232,23 @@ class PresenterController {
 
         this.prevBtn = document.getElementById('prev-btn');
         this.nextBtn = document.getElementById('next-btn');
+
+        // Calculate and apply scale transform for iframes
+        this.scaleIframes();
+        window.addEventListener('resize', () => this.scaleIframes());
+    }
+
+    scaleIframes() {
+        const wrappers = document.querySelectorAll('.slide-preview-iframe-wrapper');
+        wrappers.forEach(wrapper => {
+            const iframe = wrapper.querySelector('iframe');
+            if (iframe) {
+                const wrapperWidth = wrapper.offsetWidth;
+                const wrapperHeight = wrapper.offsetHeight;
+                const scale = Math.min(wrapperWidth / 1920, wrapperHeight / 1080);
+                iframe.style.transform = `scale(${scale})`;
+            }
+        });
     }
 
     setupControls() {
@@ -380,6 +397,8 @@ class PresenterController {
             // Force reload by adding timestamp to avoid cache
             const timestamp = Date.now();
             this.currentSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex}`;
+            // Re-scale after load
+            this.currentSlideEl.onload = () => this.scaleIframes();
         }
 
         // Update next slide iframe
@@ -388,6 +407,8 @@ class PresenterController {
             if (nextSlide) {
                 const timestamp = Date.now();
                 this.nextSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex + 1}`;
+                // Re-scale after load
+                this.nextSlideEl.onload = () => this.scaleIframes();
             } else {
                 // Show empty slide for end of presentation
                 this.nextSlideEl.src = 'about:blank';
