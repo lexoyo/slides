@@ -1,6 +1,6 @@
 {
   "name": "remote-slides",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Remote controlled presentation system with dual projection",
   "scripts": {
     "build": "eleventy",
