@@ -4,6 +4,7 @@ module.exports = function(eleventyConfig) {
   // Copy static assets
   eleventyConfig.addPassthroughCopy("src/css");
   eleventyConfig.addPassthroughCopy("src/js");
+  eleventyConfig.addPassthroughCopy("src/assets");
 
   // Initialize markdown-it
   const md = markdownIt({ html: true });
