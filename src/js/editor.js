@@ -10,7 +10,7 @@ class SlideEditor {
         this.themeSelector = document.getElementById('theme-selector');
 
         this.debounceTimer = null;
-        this.currentTheme = 'minimalist';
+        this.currentTheme = 'light';
 
         // Get presentation ID from URL
         const params = new URLSearchParams(window.location.search);
@@ -42,7 +42,7 @@ class SlideEditor {
 
             if (response.ok) {
                 const metadata = await response.json();
-                this.currentTheme = metadata.theme || 'minimalist';
+                this.currentTheme = metadata.theme || 'light';
                 this.themeSelector.value = this.currentTheme;
             }
         } catch (error) {

@@ -8,7 +8,7 @@ layout: base.njk
     <div class="slides">
         {% set processedSlides = rawContent | processSlides %}
         {% for slide in processedSlides %}
-        <section class="slide" data-slide-index="{{ slide.index }}">
+        <section class="slide" data-slide-index="{{ slide.index }}"{% if slide.theme %} data-theme="{{ slide.theme }}"{% endif %}>
             <div class="slide-content">
                 {{ slide.content | safe }}
             </div>

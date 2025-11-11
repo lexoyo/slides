@@ -29,14 +29,22 @@ module.exports = function(eleventyConfig) {
       const notesMatch = slide.match(/<!--\s*notes\s*\n([\s\S]*?)\n-->/i);
       const notes = notesMatch ? notesMatch[1].trim() : '';
 
-      // Remove notes and render markdown
-      const contentWithoutNotes = slide.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+      // Extract theme directive
+      const themeMatch = slide.match(/^theme:\s*(.+)$/m);
+      const theme = themeMatch ? themeMatch[1].trim() : null;
+
+      // Remove notes, theme directive, and render markdown
+      let contentWithoutNotes = slide.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
+      if (theme) {
+        contentWithoutNotes = contentWithoutNotes.replace(/^theme:\s*.+$\n?/m, '');
+      }
       const htmlContent = md.render(contentWithoutNotes);
 
       return {
         index,
         content: htmlContent,
-        notes
+        notes,
+        theme
       };
     });
   });

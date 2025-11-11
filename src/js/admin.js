@@ -168,7 +168,7 @@ class AdminDashboard {
         document.getElementById('edit-presentation-id').value = presentation.id;
         document.getElementById('edit-presentation-title').value = presentation.title;
         document.getElementById('edit-presentation-description').value = presentation.description || '';
-        document.getElementById('edit-presentation-theme').value = presentation.theme || 'minimalist';
+        document.getElementById('edit-presentation-theme').value = presentation.theme || 'light';
 
         this.editInfoModal.classList.add('show');
     }

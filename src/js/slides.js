@@ -6,6 +6,7 @@ class SlideController {
         this.ws = null;
         this.reconnectInterval = 3000;
         this.presentationId = null;
+        this.defaultTheme = 'light'; // Store the presentation's default theme
 
         this.init();
     }
@@ -33,6 +34,16 @@ class SlideController {
         // Restore slide from URL hash or show first slide
         const hash = window.location.hash;
         const slideIndex = hash ? parseInt(hash.substring(1)) : 0;
+
+        // Check if the initial slide has a theme and apply it
+        const initialSlide = this.slides[slideIndex];
+        if (initialSlide) {
+            const initialTheme = initialSlide.getAttribute('data-theme');
+            if (initialTheme) {
+                this.applyTheme(initialTheme);
+            }
+        }
+
         this.showSlide(slideIndex);
 
         // Setup keyboard navigation
@@ -77,7 +88,7 @@ class SlideController {
             const response = await fetch(`/api/presentations/${this.presentationId}`);
             if (response.ok) {
                 const metadata = await response.json();
-                const theme = metadata.theme || 'minimalist';
+                const theme = metadata.theme || 'light';
                 this.applyTheme(theme);
 
                 // Update page title if title is provided
@@ -125,7 +136,12 @@ class SlideController {
             const contentWithoutNotes = slideContent.replace(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/gi, '');
 
             // Parse special directives
-            const { content, bgImage, layoutImage, layoutPosition } = this.parseSlideDirectives(contentWithoutNotes);
+            const { content, bgImage, layoutImage, layoutPosition, theme } = this.parseSlideDirectives(contentWithoutNotes);
+
+            // Store theme on slide element if specified
+            if (theme) {
+                slide.setAttribute('data-theme', theme);
+            }
 
             // Apply background image if specified
             if (bgImage) {
@@ -169,7 +185,15 @@ class SlideController {
         let bgImage = null;
         let layoutImage = null;
         let layoutPosition = null;
+        let theme = null;
         let cleanContent = content;
+
+        // Check for theme: directive
+        const themeMatch = content.match(/^theme:\s*(.+)$/m);
+        if (themeMatch) {
+            theme = themeMatch[1].trim();
+            cleanContent = cleanContent.replace(/^theme:\s*.+$\n?/m, '');
+        }
 
         // Check for bg: directive
         const bgMatch = content.match(/^bg:\s*(.+)$/m);
@@ -198,7 +222,8 @@ class SlideController {
             content: cleanContent.trim(),
             bgImage,
             layoutImage,
-            layoutPosition
+            layoutPosition,
+            theme
         };
     }
 
@@ -429,6 +454,12 @@ class SlideController {
         this.slides.forEach((slide, i) => {
             if (i === index) {
                 slide.classList.add('active');
+
+                // Apply theme if this slide has a theme directive
+                const slideTheme = slide.getAttribute('data-theme');
+                if (slideTheme) {
+                    this.applyTheme(slideTheme);
+                }
             } else {
                 slide.classList.remove('active');
             }

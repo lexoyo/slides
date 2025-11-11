@@ -191,7 +191,7 @@ class PresenterController {
             const response = await fetch(`/api/presentations/${this.presentationId}`);
             if (response.ok) {
                 const metadata = await response.json();
-                const theme = metadata.theme || 'minimalist';
+                const theme = metadata.theme || 'light';
                 this.applyTheme(theme);
             }
         } catch (error) {

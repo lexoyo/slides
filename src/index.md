@@ -17,14 +17,18 @@ eleventyExcludeFromCollections: true
 ---
 # THE
 ---
+theme: light
 # THE INTER
 ---
+theme: light
 # THE INTERNOODLES
 ---
+theme: light
 left: /assets/1762797661624-792867616.png
 
 # THE INTERNOODLES
 ---
+theme: dark
 bg: /assets/1762798797506-527313988.png
 ---
 bg: /assets/1762797661624-792867616.png

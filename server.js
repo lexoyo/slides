@@ -401,7 +401,7 @@ app.post('/api/presentations', requireAuth, (req, res) => {
             id,
             title: title || 'New Presentation',
             description: description || '',
-            theme: 'minimalist',
+            theme: 'light',
             created: new Date().toISOString().split('T')[0],
             modified: new Date().toISOString().split('T')[0]
         };
