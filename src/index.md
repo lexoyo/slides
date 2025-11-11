@@ -3,6 +3,7 @@ layout: presentation.njk
 title: Rethinking website production with Silex and WordPress
 eleventyExcludeFromCollections: true
 ---
+title: false
 # Less Maintenance, More Freedom
 ## Rethinking website production<br>with Silex and WordPress
 

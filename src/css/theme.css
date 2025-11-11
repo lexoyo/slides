@@ -19,6 +19,14 @@ body {
     overflow: hidden;
 }
 
+.presentation-container.no-header .presentation-header {
+    display: none;
+}
+
+.presentation-container.no-header .slides {
+    padding-top: 0;
+}
+
 .presentation-header {
     position: fixed;
     top: 0;
@@ -29,6 +37,7 @@ body {
     padding: 1rem 2rem;
     z-index: 1000;
     backdrop-filter: blur(10px);
+    transition: opacity 0.3s ease;
 }
 
 .presentation-title {

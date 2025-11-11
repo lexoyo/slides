@@ -50,10 +50,17 @@ module.exports = function(eleventyConfig) {
       const themeMatch = slide.match(/^theme:\s*(.+)$/m);
       const theme = themeMatch ? themeMatch[1].trim() : null;
 
-      // Remove notes, theme directive, and render markdown
+      // Extract title directive
+      const titleMatch = slide.match(/^title:\s*(.+)$/m);
+      const hideTitle = titleMatch ? titleMatch[1].trim() === 'false' : false;
+
+      // Remove notes, theme directive, title directive, and render markdown
       let contentWithoutNotes = slide.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
       if (theme) {
         contentWithoutNotes = contentWithoutNotes.replace(/^theme:\s*.+$\n?/m, '');
+      }
+      if (titleMatch) {
+        contentWithoutNotes = contentWithoutNotes.replace(/^title:\s*.+$\n?/m, '');
       }
       const htmlContent = md.render(contentWithoutNotes);
 
@@ -61,7 +68,8 @@ module.exports = function(eleventyConfig) {
         index,
         content: htmlContent,
         notes,
-        theme
+        theme,
+        hideTitle
       };
     });
   });

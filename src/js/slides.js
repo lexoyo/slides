@@ -132,11 +132,16 @@ class SlideController {
             const contentWithoutNotes = slideContent.replace(/<!--\s*(?:notes\s*)?([\s\S]*?)-->/gi, '');
 
             // Parse special directives
-            const { content, bgImage, layoutImage, layoutPosition, theme } = this.parseSlideDirectives(contentWithoutNotes);
+            const { content, bgImage, layoutImage, layoutPosition, theme, hideTitle } = this.parseSlideDirectives(contentWithoutNotes);
 
             // Store theme on slide element if specified
             if (theme) {
                 slide.setAttribute('data-theme', theme);
+            }
+
+            // Store hideTitle on slide element if specified
+            if (hideTitle) {
+                slide.setAttribute('data-hide-title', 'true');
             }
 
             // Apply background image if specified
@@ -182,6 +187,7 @@ class SlideController {
         let layoutImage = null;
         let layoutPosition = null;
         let theme = null;
+        let hideTitle = false;
         let cleanContent = content;
 
         // Check for theme: directive
@@ -189,6 +195,13 @@ class SlideController {
         if (themeMatch) {
             theme = themeMatch[1].trim();
             cleanContent = cleanContent.replace(/^theme:\s*.+$\n?/m, '');
+        }
+
+        // Check for title: directive
+        const titleMatch = content.match(/^title:\s*(.+)$/m);
+        if (titleMatch) {
+            hideTitle = titleMatch[1].trim() === 'false';
+            cleanContent = cleanContent.replace(/^title:\s*.+$\n?/m, '');
         }
 
         // Check for bg: directive
@@ -219,7 +232,8 @@ class SlideController {
             bgImage,
             layoutImage,
             layoutPosition,
-            theme
+            theme,
+            hideTitle
         };
     }
 
@@ -458,6 +472,17 @@ class SlideController {
                 } else {
                     // Revert to presentation's default theme
                     this.applyTheme(this.defaultTheme);
+                }
+
+                // Handle title visibility: hide or show header based on data-hide-title attribute
+                const hideTitle = slide.getAttribute('data-hide-title') === 'true';
+                const header = document.querySelector('.presentation-header');
+                if (header) {
+                    if (hideTitle) {
+                        header.style.display = 'none';
+                    } else {
+                        header.style.display = '';
+                    }
                 }
             } else {
                 slide.classList.remove('active');
