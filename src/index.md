@@ -1,6 +1,6 @@
 ---
 layout: presentation.njk
-title: NLUUG 2025
+title: Rethinking website production with Silex and WordPress
 eleventyExcludeFromCollections: true
 ---
 # Less Maintenance, More Freedom

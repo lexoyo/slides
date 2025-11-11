@@ -3,7 +3,9 @@ class AdminDashboard {
     constructor() {
         this.presentations = [];
         this.modal = document.getElementById('new-presentation-modal');
+        this.editInfoModal = document.getElementById('edit-info-modal');
         this.toast = document.getElementById('toast');
+        this.currentEditingId = null;
         this.init();
     }
 
@@ -45,7 +47,12 @@ class AdminDashboard {
         container.innerHTML = this.presentations.map(pres => `
             <div class="presentation-card">
                 <div class="card-header">
-                    <h3 class="card-title">${this.escapeHtml(pres.title)}</h3>
+                    <div class="card-title-row">
+                        <h3 class="card-title">${this.escapeHtml(pres.title)}</h3>
+                        <button class="btn-icon btn-info" onclick="admin.openEditInfoModal('${pres.id}')" title="Edit presentation info">
+                            <svg width="20" height="20"><use href="#icon-info"></use></svg>
+                        </button>
+                    </div>
                     <div class="card-id">${this.escapeHtml(pres.id)}</div>
                 </div>
                 <p class="card-description">${this.escapeHtml(pres.description || 'No description')}</p>
@@ -84,9 +91,20 @@ class AdminDashboard {
             }
         });
 
+        this.editInfoModal.addEventListener('click', (e) => {
+            if (e.target === this.editInfoModal) {
+                this.closeEditInfoModal();
+            }
+        });
+
         // Auto-format ID as user types
         document.getElementById('presentation-id').addEventListener('input', (e) => {
             e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        });
+
+        // Save info button
+        document.getElementById('save-info-btn').addEventListener('click', () => {
+            this.saveEditInfo();
         });
     }
 
@@ -135,6 +153,67 @@ class AdminDashboard {
         } catch (error) {
             console.error('Error creating presentation:', error);
             this.showToast('Failed to create presentation', 'error');
+        }
+    }
+
+    async openEditInfoModal(id) {
+        this.currentEditingId = id;
+        const presentation = this.presentations.find(p => p.id === id);
+
+        if (!presentation) {
+            this.showToast('Presentation not found', 'error');
+            return;
+        }
+
+        document.getElementById('edit-presentation-id').value = presentation.id;
+        document.getElementById('edit-presentation-title').value = presentation.title;
+        document.getElementById('edit-presentation-description').value = presentation.description || '';
+        document.getElementById('edit-presentation-theme').value = presentation.theme || 'minimalist';
+
+        this.editInfoModal.classList.add('show');
+    }
+
+    closeEditInfoModal() {
+        this.editInfoModal.classList.remove('show');
+        this.currentEditingId = null;
+    }
+
+    async saveEditInfo() {
+        if (!this.currentEditingId) return;
+
+        const title = document.getElementById('edit-presentation-title').value.trim();
+        const description = document.getElementById('edit-presentation-description').value.trim();
+        const theme = document.getElementById('edit-presentation-theme').value.trim();
+
+        if (!title) {
+            this.showToast('Title is required', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/presentations/${this.currentEditingId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description, theme })
+            });
+
+            if (response.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+
+            if (response.ok) {
+                const data = await response.json();
+                this.showToast(data.message);
+                this.closeEditInfoModal();
+                await this.loadPresentations();
+            } else {
+                const error = await response.json();
+                this.showToast(error.error, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating presentation info:', error);
+            this.showToast('Failed to update presentation info', 'error');
         }
     }
 

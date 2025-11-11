@@ -56,6 +56,38 @@ permalink: /admin/index.html
     </div>
 </div>
 
+<!-- Edit Presentation Info Modal -->
+<div id="edit-info-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Presentation Info</h3>
+            <button class="modal-close" onclick="admin.closeEditInfoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="edit-presentation-id">ID (read-only)</label>
+                <input type="text" id="edit-presentation-id" readonly disabled>
+            </div>
+            <div class="form-group">
+                <label for="edit-presentation-title">Title</label>
+                <input type="text" id="edit-presentation-title" placeholder="My Presentation" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-presentation-description">Description</label>
+                <textarea id="edit-presentation-description" placeholder="Brief description..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="edit-presentation-theme">Theme</label>
+                <input type="text" id="edit-presentation-theme" placeholder="minimalist">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="admin.closeEditInfoModal()">Cancel</button>
+            <button id="save-info-btn" class="btn btn-primary">Save Changes</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <!-- SVG Icons -->
@@ -68,6 +100,9 @@ permalink: /admin/index.html
     </symbol>
     <symbol id="icon-edit" viewBox="0 0 24 24">
         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+    </symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
     </symbol>
 </svg>
 

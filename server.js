@@ -459,7 +459,7 @@ app.delete('/api/presentations/:id', requireAuth, (req, res) => {
 app.patch('/api/presentations/:id', requireAuth, (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, layout } = req.body;
+        const { title, description, layout, theme } = req.body;
 
         const jsonPath = path.join(__dirname, 'presentations', `${id}.json`);
         const mdPath = path.join(__dirname, 'presentations', `${id}.md`);
@@ -472,6 +472,7 @@ app.patch('/api/presentations/:id', requireAuth, (req, res) => {
         const metadata = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
         if (title) metadata.title = title;
         if (description !== undefined) metadata.description = description;
+        if (theme !== undefined) metadata.theme = theme;
         metadata.modified = new Date().toISOString().split('T')[0];
         fs.writeFileSync(jsonPath, JSON.stringify(metadata, null, 2), 'utf8');
 
