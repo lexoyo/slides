@@ -218,7 +218,7 @@ class AdminDashboard {
     }
 
     editPresentation(id) {
-        window.location.href = `/editor?id=${id}`;
+        window.open(`/editor?id=${id}`, '_blank');
     }
 
     viewPresentation(id) {
