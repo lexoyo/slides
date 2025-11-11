@@ -19,6 +19,25 @@ body {
     overflow: hidden;
 }
 
+.presentation-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid #e1e4e8;
+    padding: 1rem 2rem;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.presentation-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
 .slides {
     width: 100%;
     height: 100%;
@@ -34,7 +53,7 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 4rem;
+    padding: 6rem 4rem 4rem 4rem;
     background: #ffffff;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -220,8 +239,16 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .presentation-header {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .presentation-title {
+        font-size: 0.9rem;
+    }
+
     .slide {
-        padding: 2rem 1.5rem;
+        padding: 4.5rem 1.5rem 2rem 1.5rem;
     }
 
     .slide-content h1 {
@@ -256,6 +283,11 @@ body {
 }
 
 @media print {
+    .presentation-header {
+        position: relative;
+        page-break-after: avoid;
+    }
+
     .slide {
         page-break-after: always;
         position: relative;

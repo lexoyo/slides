@@ -2,6 +2,9 @@
 layout: base.njk
 ---
 <div class="presentation-container">
+    <header class="presentation-header">
+        <h1 class="presentation-title">{{ title }}</h1>
+    </header>
     <div class="slides">
         {% set processedSlides = rawContent | processSlides %}
         {% for slide in processedSlides %}
