@@ -90,6 +90,12 @@ class SlideController {
                 // Update page title if title is provided
                 if (metadata.title) {
                     document.title = metadata.title;
+
+                    // Update presentation header title
+                    const titleElement = document.querySelector('.presentation-title .title-text');
+                    if (titleElement) {
+                        titleElement.textContent = metadata.title;
+                    }
                 }
             }
         } catch (error) {
