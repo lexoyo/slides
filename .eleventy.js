@@ -6,6 +6,15 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/js");
   eleventyConfig.addPassthroughCopy("src/assets");
 
+  // Add presentations as a collection to generate static pages
+  eleventyConfig.addCollection("presentations", function(collectionApi) {
+    return collectionApi.getFilteredByGlob("src/presentations/*.md")
+      .filter(item => {
+        // Exclude README.md
+        return !item.inputPath.includes("README.md");
+      });
+  });
+
   // Initialize markdown-it
   const md = markdownIt({ html: true });
 
@@ -54,13 +63,32 @@ module.exports = function(eleventyConfig) {
       const titleMatch = slide.match(/^title:\s*(.+)$/m);
       const hideTitle = titleMatch ? titleMatch[1].trim() === 'false' : false;
 
-      // Remove notes, theme directive, title directive, and render markdown
+      // Extract image directives
+      const bgMatch = slide.match(/^(?:bg|background):\s*(.+)$/m);
+      const background = bgMatch ? bgMatch[1].trim() : null;
+
+      const leftMatch = slide.match(/^left:\s*(.+)$/m);
+      const leftImage = leftMatch ? leftMatch[1].trim() : null;
+
+      const rightMatch = slide.match(/^right:\s*(.+)$/m);
+      const rightImage = rightMatch ? rightMatch[1].trim() : null;
+
+      // Remove notes, theme directive, title directive, image directives, and render markdown
       let contentWithoutNotes = slide.replace(/<!--\s*notes\s*\n[\s\S]*?\n-->/gi, '');
       if (theme) {
         contentWithoutNotes = contentWithoutNotes.replace(/^theme:\s*.+$\n?/m, '');
       }
       if (titleMatch) {
         contentWithoutNotes = contentWithoutNotes.replace(/^title:\s*.+$\n?/m, '');
+      }
+      if (background) {
+        contentWithoutNotes = contentWithoutNotes.replace(/^(?:bg|background):\s*.+$\n?/m, '');
+      }
+      if (leftImage) {
+        contentWithoutNotes = contentWithoutNotes.replace(/^left:\s*.+$\n?/m, '');
+      }
+      if (rightImage) {
+        contentWithoutNotes = contentWithoutNotes.replace(/^right:\s*.+$\n?/m, '');
       }
       const htmlContent = md.render(contentWithoutNotes);
 
@@ -69,7 +97,10 @@ module.exports = function(eleventyConfig) {
         content: htmlContent,
         notes,
         theme,
-        hideTitle
+        hideTitle,
+        background,
+        leftImage,
+        rightImage
       };
     });
   });

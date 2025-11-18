@@ -2,6 +2,10 @@
 layout: presentation.njk
 title: My Presentation
 eleventyExcludeFromCollections: true
+description: Example presentation with remote control
+theme: light
+created: '2025-11-10'
+modified: '2025-11-10'
 ---
 # Welcome to Remote Slides
 

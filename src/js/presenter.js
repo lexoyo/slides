@@ -396,7 +396,7 @@ class PresenterController {
         if (this.currentSlideEl) {
             // Force reload by adding timestamp to avoid cache
             const timestamp = Date.now();
-            this.currentSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex}`;
+            this.currentSlideEl.src = `/presentations/${this.presentationId}/?t=${timestamp}#${this.currentIndex}`;
             // Re-scale after load
             this.currentSlideEl.onload = () => this.scaleIframes();
         }
@@ -406,7 +406,7 @@ class PresenterController {
         if (this.nextSlideEl) {
             if (nextSlide) {
                 const timestamp = Date.now();
-                this.nextSlideEl.src = `/?id=${this.presentationId}&t=${timestamp}#${this.currentIndex + 1}`;
+                this.nextSlideEl.src = `/presentations/${this.presentationId}/?t=${timestamp}#${this.currentIndex + 1}`;
                 // Re-scale after load
                 this.nextSlideEl.onload = () => this.scaleIframes();
             } else {

@@ -202,7 +202,7 @@ class SlideEditor {
 
         // Force reload with timestamp to bust cache, but keep current slide
         const timestamp = Date.now();
-        this.previewIframe.src = `/?id=${this.presentationId}&t=${timestamp}#${currentSlide}`;
+        this.previewIframe.src = `/presentations/${this.presentationId}/?t=${timestamp}#${currentSlide}`;
     }
 
     insertImageMarkdown(url, altText) {

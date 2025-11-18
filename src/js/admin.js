@@ -222,7 +222,7 @@ class AdminDashboard {
     }
 
     viewPresentation(id) {
-        window.open(`/?id=${id}`, '_blank');
+        window.open(`/presentations/${id}/`, '_blank');
     }
 
     presentPresentation(id) {

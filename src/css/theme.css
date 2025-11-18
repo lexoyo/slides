@@ -102,6 +102,39 @@ body {
 .slide-content {
     max-width: 900px;
     width: 100%;
+    padding: 2rem;
+    z-index: 1;
+}
+
+/* Image left/right layout */
+.slide-image-left,
+.slide-image-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.slide-image-left {
+    left: 0;
+}
+
+.slide-image-right {
+    right: 0;
+}
+
+/* Adjust content when there's a left/right image */
+.slide:has(.slide-image-left) .slide-content {
+    margin-left: 50%;
+    max-width: 50%;
+}
+
+.slide:has(.slide-image-right) .slide-content {
+    margin-right: 50%;
+    max-width: 50%;
 }
 
 .slide-content h1 {
