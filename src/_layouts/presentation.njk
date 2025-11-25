@@ -15,7 +15,13 @@ layout: base.njk
     </header>
     <div class="slides">
         {% for slide in processedSlides %}
-        <section class="slide" data-slide-index="{{ slide.index }}"{% if slide.theme %} data-theme="{{ slide.theme }}"{% endif %}{% if slide.hideTitle %} data-hide-title="true"{% endif %}>
+        <section class="slide" data-slide-index="{{ slide.index }}"{% if slide.theme %} data-theme="{{ slide.theme }}"{% endif %}{% if slide.hideTitle %} data-hide-title="true"{% endif %}{% if slide.background %} style="background-image: url('{{ slide.background }}'); background-size: cover; background-position: center;"{% endif %}>
+            {% if slide.leftImage %}
+            <div class="slide-image-left" style="background-image: url('{{ slide.leftImage }}');"></div>
+            {% endif %}
+            {% if slide.rightImage %}
+            <div class="slide-image-right" style="background-image: url('{{ slide.rightImage }}');"></div>
+            {% endif %}
             <div class="slide-content">
                 {{ slide.content | safe }}
             </div>
