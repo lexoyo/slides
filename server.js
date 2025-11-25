@@ -44,13 +44,13 @@ app.use(session({
 // Serve static files from _site (11ty output)
 app.use(express.static(path.join(__dirname, '_site')));
 
-// Serve uploaded assets
-app.use('/assets', express.static(path.join(__dirname, 'src', 'presentations', 'assets')));
+// Serve uploaded assets from presentations directory (persistent volume in Docker)
+app.use('/assets', express.static(path.join(__dirname, 'presentations', 'assets')));
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const assetsDir = path.join(__dirname, 'src', 'presentations', 'assets');
+        const assetsDir = path.join(__dirname, 'presentations', 'assets');
         if (!fs.existsSync(assetsDir)) {
             fs.mkdirSync(assetsDir, { recursive: true });
         }
