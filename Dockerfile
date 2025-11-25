@@ -15,11 +15,8 @@ RUN npm install --save-dev @11ty/eleventy
 # Copy application files
 COPY . .
 
-# Create presentations directory and copy default presentation
+# Ensure presentations directory structure exists
 RUN mkdir -p /app/presentations/assets
-COPY presentations/default.* /app/presentations/
-COPY presentations/README.md /app/presentations/
-COPY presentations/assets/.gitkeep /app/presentations/assets/
 
 # Build the 11ty site
 RUN npm run build
