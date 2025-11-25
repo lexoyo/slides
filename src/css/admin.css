@@ -143,21 +143,8 @@ body {
 
 .card-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
-}
-
-.card-actions .btn-duplicate,
-.card-actions .btn-delete {
-    grid-column: span 1;
-}
-
-.card-actions > :last-child:nth-child(4) {
-    grid-column: 2 / 4;
-}
-
-.card-actions > :last-child:nth-child(5) {
-    grid-column: auto;
 }
 
 .card-btn {
@@ -213,6 +200,23 @@ body {
 
 .btn-delete:hover {
     background: #dc2626;
+}
+
+.btn-export {
+    background: #06b6d4;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.btn-export:hover {
+    background: #0891b2;
+}
+
+.btn-export svg {
+    fill: currentColor;
 }
 
 .btn {
@@ -383,6 +387,10 @@ body {
 
 .toast.error {
     background: #ef4444;
+}
+
+.toast.info {
+    background: #3b82f6;
 }
 
 .loading {

@@ -65,6 +65,9 @@ class AdminDashboard {
                     <button class="card-btn btn-view" onclick="admin.viewPresentation('${pres.id}')">View</button>
                     <button class="card-btn btn-present" onclick="admin.presentPresentation('${pres.id}')">Present</button>
                     <button class="card-btn btn-duplicate" onclick="admin.duplicatePresentation('${pres.id}')">Duplicate</button>
+                    <button class="card-btn btn-export" onclick="admin.exportToPdf('${pres.id}', '${this.escapeHtml(pres.title)}')">
+                        <svg width="16" height="16"><use href="#icon-pdf"></use></svg> Export PDF
+                    </button>
                     ${pres.id !== 'default' ? `<button class="card-btn btn-delete" onclick="admin.deletePresentation('${pres.id}')">Delete</button>` : '<div></div>'}
                 </div>
             </div>
@@ -296,11 +299,120 @@ class AdminDashboard {
         }
     }
 
+    async exportToPdf(id, title) {
+        this.showToast('Generating PDF... This may take a moment', 'info');
+
+        try {
+            // Open the presentation in a hidden iframe to render it
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.left = '-9999px';
+            iframe.style.width = '1280px';
+            iframe.style.height = '720px';
+            document.body.appendChild(iframe);
+
+            // Load the presentation
+            const presentationUrl = `/presentations/${id}/`;
+
+            iframe.onload = async () => {
+                try {
+                    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                    const slides = iframeDocument.querySelectorAll('.slide');
+
+                    if (slides.length === 0) {
+                        this.showToast('No slides found in presentation', 'error');
+                        document.body.removeChild(iframe);
+                        return;
+                    }
+
+                    // Use html2pdf's bundled jsPDF and html2canvas
+                    const { jsPDF } = window.jspdf || window;
+
+                    // Create PDF document
+                    const pdf = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'px',
+                        format: [1280, 720],
+                        compress: true
+                    });
+
+                    // Process each slide
+                    for (let i = 0; i < slides.length; i++) {
+                        // Make only this slide visible
+                        slides.forEach((s, idx) => {
+                            if (idx === i) {
+                                s.style.display = 'flex';
+                                s.style.opacity = '1';
+                                s.style.position = 'relative';
+                            } else {
+                                s.style.display = 'none';
+                            }
+                        });
+
+                        // Remove presenter notes
+                        const notes = slides[i].querySelectorAll('.presenter-notes');
+                        notes.forEach(note => note.style.display = 'none');
+
+                        // Wait a bit for rendering
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                        // Capture the slide container
+                        const slideContainer = iframeDocument.querySelector('.slides');
+
+                        const canvas = await html2canvas(slideContainer, {
+                            scale: 2,
+                            useCORS: true,
+                            logging: false,
+                            width: 1280,
+                            height: 720,
+                            windowWidth: 1280,
+                            windowHeight: 720
+                        });
+
+                        // Convert canvas to image
+                        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+                        // Add page to PDF (except for first page which already exists)
+                        if (i > 0) {
+                            pdf.addPage([1280, 720], 'landscape');
+                        }
+
+                        // Add image to PDF
+                        pdf.addImage(imgData, 'JPEG', 0, 0, 1280, 720);
+                    }
+
+                    // Save the PDF
+                    pdf.save(`${id}.pdf`);
+
+                    this.showToast('PDF exported successfully!');
+                    document.body.removeChild(iframe);
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    this.showToast('Failed to generate PDF', 'error');
+                    document.body.removeChild(iframe);
+                }
+            };
+
+            iframe.onerror = () => {
+                this.showToast('Failed to load presentation', 'error');
+                document.body.removeChild(iframe);
+            };
+
+            iframe.src = presentationUrl;
+
+        } catch (error) {
+            console.error('Error exporting to PDF:', error);
+            this.showToast('Failed to export PDF', 'error');
+        }
+    }
+
     showToast(message, type = 'success') {
         this.toast.textContent = message;
         this.toast.className = 'toast show';
         if (type === 'error') {
             this.toast.classList.add('error');
+        } else if (type === 'info') {
+            this.toast.classList.add('info');
         }
         setTimeout(() => {
             this.toast.classList.remove('show');
