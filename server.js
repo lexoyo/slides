@@ -46,6 +46,7 @@ app.use(express.static(path.join(__dirname, '_site')));
 
 // Serve uploaded assets from presentations directory (persistent volume in Docker)
 app.use('/assets', express.static(path.join(__dirname, 'presentations', 'assets')));
+app.use('/assets', express.static(path.join(__dirname, 'src', 'presentations', 'assets')));
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({

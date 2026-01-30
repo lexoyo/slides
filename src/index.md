@@ -11,7 +11,7 @@ modified: '2026-01-30'
 
 title: false
 
-# Free/Libre Web Design workflows
+# Free/Libre Web Design workflows ooo
 ## static sites, no-code tools and WordPress headless
 
 > FOSDEM 2026
