@@ -1,22 +1,22 @@
 ---
 layout: presentation.njk
-title: Rethinking website production with Silex and WordPress
+title: Free/Libre Web Design workflows
 eleventyExcludeFromCollections: true
 description: ''
 theme: light
-created: '2025-11-10'
-modified: '2025-11-15'
+created: '2026-01-30'
+modified: '2026-01-30'
 ---
 <style>.split-image img {  object-fit: scale-down !important; }.slide-content table.slide-table{position:relative;left:calc(-95vw/2 + 450px);width:95vw !important;max-width:95vw !important;border-collapse:separate;border-spacing:0 18px;font-family:sans-serif;font-size:22px;table-layout:fixed}.slide-content table.slide-table thead{display:table-header-group !important}.slide-content table.slide-table thead th{text-align:left;font-weight:600;color:#333;padding:6px 0;border-bottom:2px solid rgba(0,0,0,0.1)}.slide-content table.slide-table tbody tr{background:#fff}.slide-content table.slide-table tbody td{padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.06);vertical-align:middle}.slide-content table.slide-table td:nth-child(1){font-weight:700;color:#111}.slide-content table.slide-table td:nth-child(5),.slide-content table.slide-table td:nth-child(7){font-size:24px}.slide-content table.slide-table tbody tr:last-child td{border-bottom:none}</style>
 
 title: false
 
-# Less Maintenance, More Freedom
-## Webdesign at scale w/ Silex and WordPress
+# Free/Libre Web Design workflows
+## static sites, no-code tools and WordPress headless
 
-> NLUUG 2025
-&nbsp;&nbsp; November 20, 14:50–15:35, Utrecht, NL
-&nbsp;&nbsp; Duration 00:45
+> FOSDEM 2026
+&nbsp;&nbsp; Jan 31, 11:00–12:00, Brussels, Belgium
+&nbsp;&nbsp; Duration 01:00
 
 <!--
 ## Themes
