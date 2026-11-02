@@ -4,23 +4,26 @@
   "description": "Remote controlled presentation system with dual projection",
   "scripts": {
     "build": "eleventy",
-    "start": "npm-run-all --parallel dev:*",
+    "start": "npm-run-all --parallel prod:*",
+    "prod:eleventy": "eleventy --watch",
+    "prod:server": "node server.js",
+    "dev": "npm-run-all --parallel dev:*",
     "dev:eleventy": "eleventy --serve --port=8081",
     "dev:server": "nodemon server.js"
   },
   "dependencies": {
-    "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy": "^3.1.7",
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "markdown-it": "^13.0.2",
+    "markdown-it": "^15.0.3",
     "marked": "^17.0.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.5.0",
     "session-file-store": "^1.5.0",
-    "ws": "^8.14.2"
+    "ws": "^8.14.2",
+    "npm-run-all": "^4.1.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "npm-run-all": "^4.1.5"
+    "nodemon": "^3.0.1"
   }
 }

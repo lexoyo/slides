@@ -6,11 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
-
-# Install 11ty and build dependencies
-RUN npm install --save-dev @11ty/eleventy
+# Install dependencies (eleventy and npm-run-all are runtime dependencies)
+RUN npm ci --omit=dev
 
 # Copy application files
 COPY . .
